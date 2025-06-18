@@ -4,13 +4,11 @@ import './index.css'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router-dom'
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import '@solana/wallet-adapter-react-ui/styles.css';
 import heroBg from './assets/home-hero.jpg';
 
-const network = WalletAdapterNetwork.Devnet;
 const endpoint = 'https://api.devnet.solana.com';
 const wallets = [new PhantomWalletAdapter()];
 
