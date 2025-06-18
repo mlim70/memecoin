@@ -1,3 +1,4 @@
+// src/pages/AccountPage.tsx
 import Navigation from '../components/Navigation';
 
 export default function AccountPage() {

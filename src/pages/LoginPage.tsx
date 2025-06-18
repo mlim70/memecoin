@@ -1,3 +1,4 @@
+// src/pages/LoginPage.tsx
 import Navigation from '../components/Navigation';
 import { GoogleLogin, googleLogout, GoogleOAuthProvider } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
@@ -17,9 +18,14 @@ export default function LoginPage() {
     console.log('Email login:', email, password);
   };
 
+  const handleSignOut = () => {
+    setUser(null);
+    googleLogout();
+  };
+
   return (
     <div className="main-container">
-      <Navigation currentPage="login" />
+      <Navigation currentPage="login" user={user} onSignOut={handleSignOut} />
       <div className="auth-layout">
         <div className="auth-container">
           <div className="auth-box">
@@ -97,7 +103,7 @@ export default function LoginPage() {
                 <p>You're successfully logged in</p>
                 <button 
                   className="btn btn-secondary" 
-                  onClick={() => { setUser(null); googleLogout(); }}
+                  onClick={handleSignOut}
                 >
                   Sign Out
                 </button>

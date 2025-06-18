@@ -1,12 +1,15 @@
+// src/components/Navigation.tsx
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useEffect, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
 
 interface NavigationProps {
   currentPage?: string;
+  user?: any;
+  onSignOut?: () => void;
 }
 
-export default function Navigation({ currentPage = 'home' }: NavigationProps) {
+export default function Navigation({ currentPage = 'home', user, onSignOut }: NavigationProps) {
   // SPL token mint address (replace with actual address)
   const TOKEN_MINT = 'TOKEN_MINT_ADDRESS_HERE';
   const { publicKey, connected } = useWallet();
@@ -31,6 +34,12 @@ export default function Navigation({ currentPage = 'home' }: NavigationProps) {
     if (connected) fetchTokenBalance();
   }, [publicKey, connected, connection]);
 
+  const handleSignOut = () => {
+    if (onSignOut) {
+      onSignOut();
+    }
+  };
+
   return (
     <header className="header">
       <div className="header-content">
@@ -53,7 +62,13 @@ export default function Navigation({ currentPage = 'home' }: NavigationProps) {
               )}
             </div>
           )}
-          <a href="/login" className="btn btn-primary login-btn">Login</a>
+          {user ? (
+            <button onClick={handleSignOut} className="btn btn-secondary login-btn">
+              Sign Out
+            </button>
+          ) : (
+            <a href="/login" className="btn btn-primary login-btn">Login</a>
+          )}
         </div>
       </div>
     </header>

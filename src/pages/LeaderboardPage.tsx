@@ -1,3 +1,4 @@
+// src/pages/LeaderboardPage.tsx
 import Navigation from '../components/Navigation';
 
 export default function LeaderboardPage() {

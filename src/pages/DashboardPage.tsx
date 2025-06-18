@@ -1,3 +1,4 @@
+// src/pages/DashboardPage.tsx
 import Navigation from '../components/Navigation';
 
 export default function DashboardPage() {
