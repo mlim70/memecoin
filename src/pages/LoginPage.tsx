@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [user, setUser] = useState<any>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
 
   const handleEmailLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,14 +20,16 @@ export default function LoginPage() {
   return (
     <div className="main-container">
       <Navigation currentPage="login" />
-      <main className="page-content">
-        <div className="content-wrapper">
-          <div className="login-container">
-            <h1 className="hero-title">Welcome Back</h1>
-            <p>Sign in to your account to continue</p>
+      <div className="auth-layout">
+        <div className="auth-container">
+          <div className="auth-box">
+            <div className="auth-header">
+              <h1 className="hero-title">{isSignUp ? 'Create Account' : 'Welcome Back'}</h1>
+              <p>{isSignUp ? 'Sign up to get started' : 'Sign in to your account to continue'}</p>
+            </div>
             
             {!user ? (
-              <div className="login-options">
+              <div className="auth-content">
                 <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
                   <div className="google-login-section">
                     <GoogleLogin
@@ -48,7 +51,7 @@ export default function LoginPage() {
                   <span>or</span>
                 </div>
                 
-                <form onSubmit={handleEmailLogin} className="email-login-form">
+                <form onSubmit={handleEmailLogin} className="email-auth-form">
                   <div className="form-group">
                     <input
                       type="email"
@@ -68,13 +71,23 @@ export default function LoginPage() {
                     />
                   </div>
                   <button type="submit" className="btn btn-primary">
-                    Sign In
+                    {isSignUp ? 'Create Account' : 'Sign In'}
                   </button>
                 </form>
                 
-                <div className="login-footer">
-                  <a href="#" className="forgot-password">Forgot password?</a>
-                  <p>Don't have an account? <a href="#" className="signup-link">Sign up</a></p>
+                <div className="auth-footer">
+                  {!isSignUp && (
+                    <a href="#" className="forgot-password">Forgot password?</a>
+                  )}
+                  <p>
+                    {isSignUp ? 'Already have an account?' : "Don't have an account?"} 
+                    <button 
+                      className="toggle-auth-mode" 
+                      onClick={() => setIsSignUp(!isSignUp)}
+                    >
+                      {isSignUp ? 'Sign in' : 'Sign up'}
+                    </button>
+                  </p>
                 </div>
               </div>
             ) : (
@@ -92,7 +105,7 @@ export default function LoginPage() {
             )}
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 } 
