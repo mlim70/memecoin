@@ -22,7 +22,7 @@ export default function LoginPage() {
       <main className="page-content">
         <div className="content-wrapper">
           <div className="login-container">
-            <h1>Welcome Back</h1>
+            <h1 className="hero-title">Welcome Back</h1>
             <p>Sign in to your account to continue</p>
             
             {!user ? (

@@ -135,10 +135,14 @@ body {
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 900;
   margin-bottom: 1.5rem;
-  color: #e2e8f0;
+  color: #ffffff !important;
   line-height: 1.1;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
   letter-spacing: -0.02em;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
 }
 
 .hero-subtitle {

@@ -1,54 +1,48 @@
 import Navigation from '../components/Navigation';
 
 export default function AccountPage() {
-  const userProfile = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatar: "👤",
-    memberSince: "March 2024",
-    totalTransactions: 47,
-    verificationStatus: "Verified"
-  };
-
-  const accountStats = [
-    { label: "Total Trades", value: "47" },
-    { label: "Success Rate", value: "94%" },
-    { label: "Account Age", value: "3 months" },
-    { label: "Security Score", value: "A+" }
-  ];
-
   return (
     <div className="main-container">
       <Navigation currentPage="account" />
       <main className="page-content">
         <div className="content-wrapper">
           <div className="account-container">
-            <h1>👤 Account Settings</h1>
+            <h1 className="hero-title">👤 Account Settings</h1>
             <p>Manage your profile and preferences</p>
             
             <div className="profile-section">
               <div className="profile-header">
                 <div className="profile-avatar">
-                  <span className="avatar-large">{userProfile.avatar}</span>
+                  <span className="avatar-large">👤</span>
                 </div>
                 <div className="profile-info">
-                  <h2>{userProfile.name}</h2>
-                  <p>{userProfile.email}</p>
+                  <h2>Connect Wallet</h2>
+                  <p>Connect your wallet to view account details</p>
                   <span className="verification-badge">
-                    ✓ {userProfile.verificationStatus}
+                    Not connected
                   </span>
-                  <p className="member-since">Member since {userProfile.memberSince}</p>
+                  <p className="member-since">Connect wallet to access account</p>
                 </div>
               </div>
             </div>
             
             <div className="account-stats">
-              {accountStats.map((stat, index) => (
-                <div key={index} className="stat-item">
-                  <span className="stat-value">{stat.value}</span>
-                  <span className="stat-label">{stat.label}</span>
-                </div>
-              ))}
+              <div className="stat-item">
+                <span className="stat-value">0</span>
+                <span className="stat-label">Total Trades</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">0%</span>
+                <span className="stat-label">Success Rate</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">-</span>
+                <span className="stat-label">Account Age</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">-</span>
+                <span className="stat-label">Security Score</span>
+              </div>
             </div>
             
             <div className="settings-grid">
@@ -57,15 +51,15 @@ export default function AccountPage() {
                 <div className="settings-list">
                   <div className="setting-item">
                     <span>Two-Factor Authentication</span>
-                    <button className="btn btn-secondary">Enable</button>
+                    <button className="btn btn-secondary" disabled>Connect Wallet</button>
                   </div>
                   <div className="setting-item">
                     <span>Change Password</span>
-                    <button className="btn btn-secondary">Update</button>
+                    <button className="btn btn-secondary" disabled>Connect Wallet</button>
                   </div>
                   <div className="setting-item">
                     <span>Login History</span>
-                    <button className="btn btn-secondary">View</button>
+                    <button className="btn btn-secondary" disabled>Connect Wallet</button>
                   </div>
                 </div>
               </div>
@@ -75,15 +69,15 @@ export default function AccountPage() {
                 <div className="settings-list">
                   <div className="setting-item">
                     <span>Email Notifications</span>
-                    <button className="btn btn-secondary">Configure</button>
+                    <button className="btn btn-secondary" disabled>Connect Wallet</button>
                   </div>
                   <div className="setting-item">
                     <span>Language</span>
-                    <button className="btn btn-secondary">English</button>
+                    <button className="btn btn-secondary" disabled>Connect Wallet</button>
                   </div>
                   <div className="setting-item">
                     <span>Theme</span>
-                    <button className="btn btn-secondary">Dark</button>
+                    <button className="btn btn-secondary" disabled>Connect Wallet</button>
                   </div>
                 </div>
               </div>
@@ -93,11 +87,11 @@ export default function AccountPage() {
                 <div className="settings-list">
                   <div className="setting-item">
                     <span>Add Payment Method</span>
-                    <button className="btn btn-primary">Add</button>
+                    <button className="btn btn-primary" disabled>Connect Wallet</button>
                   </div>
                   <div className="setting-item">
                     <span>Billing History</span>
-                    <button className="btn btn-secondary">View</button>
+                    <button className="btn btn-secondary" disabled>Connect Wallet</button>
                   </div>
                 </div>
               </div>
@@ -107,18 +101,18 @@ export default function AccountPage() {
                 <div className="settings-list">
                   <div className="setting-item">
                     <span>Export Data</span>
-                    <button className="btn btn-secondary">Download</button>
+                    <button className="btn btn-secondary" disabled>Connect Wallet</button>
                   </div>
                   <div className="setting-item">
                     <span>Delete Account</span>
-                    <button className="btn btn-secondary danger">Delete</button>
+                    <button className="btn btn-secondary danger" disabled>Connect Wallet</button>
                   </div>
                 </div>
               </div>
             </div>
             
             <div className="account-actions">
-              <button className="btn btn-primary">Save Changes</button>
+              <button className="btn btn-primary">Connect Wallet</button>
               <button className="btn btn-secondary">Cancel</button>
             </div>
           </div>
