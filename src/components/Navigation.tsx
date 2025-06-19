@@ -2,14 +2,14 @@
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useEffect, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
+import { useUser } from '../contexts/UserContext';
 
 interface NavigationProps {
-  currentPage?: string;
-  user?: any;
-  onSignOut?: () => void;
+  currentPage: string;
 }
 
-export default function Navigation({ currentPage = 'home', user, onSignOut }: NavigationProps) {
+export default function Navigation({ currentPage }: NavigationProps) {
+  const { user, signOut } = useUser();
   // SPL token mint address (replace with actual address)
   const TOKEN_MINT = 'TOKEN_MINT_ADDRESS_HERE';
   const { publicKey, connected } = useWallet();
@@ -35,9 +35,7 @@ export default function Navigation({ currentPage = 'home', user, onSignOut }: Na
   }, [publicKey, connected, connection]);
 
   const handleSignOut = () => {
-    if (onSignOut) {
-      onSignOut();
-    }
+    signOut();
   };
 
   return (
@@ -46,10 +44,18 @@ export default function Navigation({ currentPage = 'home', user, onSignOut }: Na
         <div className="logo">Memecoin</div>
         
         <nav className="nav-bar">
-          <a href="/" className={`nav-link ${currentPage === 'home' ? 'active' : ''}`}>Home</a>
-          <a href="/leaderboard" className={`nav-link ${currentPage === 'leaderboard' ? 'active' : ''}`}>Leaderboard</a>
-          <a href="/dashboard" className={`nav-link ${currentPage === 'dashboard' ? 'active' : ''}`}>Dashboard</a>
-          <a href="/account" className={`nav-link ${currentPage === 'account' ? 'active' : ''}`}>Account</a>
+          <a href="/" className={`nav-link ${currentPage === 'home' ? 'active' : ''}`}>
+            Home
+          </a>
+          <a href="/dashboard" className={`nav-link ${currentPage === 'dashboard' ? 'active' : ''}`}>
+            Dashboard
+          </a>
+          <a href="/leaderboard" className={`nav-link ${currentPage === 'leaderboard' ? 'active' : ''}`}>
+            Leaderboard
+          </a>
+          <a href="/account" className={`nav-link ${currentPage === 'account' ? 'active' : ''}`}>
+            Account
+          </a>
         </nav>
         
         <div className="header-actions">
@@ -63,11 +69,13 @@ export default function Navigation({ currentPage = 'home', user, onSignOut }: Na
             </div>
           )}
           {user ? (
-            <button onClick={handleSignOut} className="btn btn-secondary login-btn">
+            <button className="login-btn" onClick={handleSignOut}>
               Sign Out
             </button>
           ) : (
-            <a href="/login" className="btn btn-primary login-btn">Login</a>
+            <a href="/login" className="login-btn">
+              Login
+            </a>
           )}
         </div>
       </div>

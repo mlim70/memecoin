@@ -3,11 +3,13 @@ import Navigation from '../components/Navigation';
 import { GoogleLogin, googleLogout, GoogleOAuthProvider } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import { useState } from 'react';
+import { saveUserToFirestore } from '../utils/firestoreUser';
+import { useUser } from '../contexts/UserContext';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 export default function LoginPage() {
-  const [user, setUser] = useState<any>(null);
+  const { user, setUser, signOut } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -19,13 +21,13 @@ export default function LoginPage() {
   };
 
   const handleSignOut = () => {
-    setUser(null);
+    signOut();
     googleLogout();
   };
 
   return (
     <div className="main-container">
-      <Navigation currentPage="login" user={user} onSignOut={handleSignOut} />
+      <Navigation currentPage="login"/>
       <div className="auth-layout">
         <div className="auth-container">
           <div className="auth-box">
@@ -43,6 +45,8 @@ export default function LoginPage() {
                         if (credentialResponse.credential) {
                           const decoded: any = jwtDecode(credentialResponse.credential);
                           setUser(decoded);
+                          // Save user data to Firestore
+                          saveUserToFirestore(decoded);
                         }
                       }}
                       onError={() => {
@@ -98,7 +102,15 @@ export default function LoginPage() {
               </div>
             ) : (
               <div className="user-profile">
-                <img src={user.picture} alt="avatar" className="user-avatar" />
+                <img 
+                  src={user.picture} 
+                  alt="avatar" 
+                  className="user-avatar"
+                  onError={(e) => {
+                    // Fallback to a default avatar if the image fails to load
+                    e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiM2MzY2ZjEiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+CjxwYXRoIGQ9Ik0xMiAxMmMyLjIxIDAgNC0xLjc5IDQtNHMtMS43OS00LTQtNC00IDEuNzktNCA0IDEuNzkgNCA0IDR6bTAgMmMtMi42NyAwLTggMS4zNC04IDR2MmgxNnYtMmMwLTIuNjYtNS4zMy00LTgtNHoiLz4KPC9zdmc+Cjwvc3ZnPgo=';
+                  }}
+                />
                 <h2>Welcome, {user.name}!</h2>
                 <p>You're successfully logged in</p>
                 <button 
