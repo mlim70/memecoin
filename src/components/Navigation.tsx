@@ -2,6 +2,7 @@
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useEffect, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
+import merchLogo from '../assets/merch-icon.png';
 
 interface NavigationProps {
   currentPage: string;
@@ -35,7 +36,9 @@ export default function Navigation({ currentPage }: NavigationProps) {
   return (
     <header className="header">
       <div className="header-content">
-        <div className="logo">Memecoin</div>
+        <div className="logo">
+          <img src={merchLogo} alt="MERCH Logo" style={{ height: 36, width: 'auto', display: 'block' }} />
+        </div>
         <nav className="nav-bar">
           <a href="/" className={`nav-link ${currentPage === 'home' ? 'active' : ''}`}>Home</a>
           <a href="/dashboard" className={`nav-link ${currentPage === 'dashboard' ? 'active' : ''}`}>Dashboard</a>

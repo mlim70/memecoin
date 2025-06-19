@@ -5,6 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { saveShippingInfoForWallet, getShippingInfoForWallet } from '../utils/firestoreUser';
+import merchLogo from '../assets/merch-icon.png';
 
 const SOLANA_RPC = 'https://api.devnet.solana.com';
 
@@ -108,10 +109,14 @@ export default function HomePage() {
     <div className="main-container">
       <Navigation currentPage="home" />
       <main className="hero-section fade-in-up">
+        <img src={merchLogo} alt="MERCH Logo" style={{ height: 64, width: 'auto', margin: '0 auto 1.5rem auto', display: 'block' }} />
         <h1 className="hero-title">Welcome to Memecoin</h1>
         <p className="hero-subtitle">
           The future of decentralized finance starts here
         </p>
+        <div style={{ fontSize: '1.1rem', color: '#a1a1aa', margin: '0.5rem 0 2rem 0', fontWeight: 500, letterSpacing: '0.01em', textShadow: '0 1px 2px rgba(0,0,0,0.12)' }}>
+          Connect Wallet, Claim Merch
+        </div>
         
         <div className="nav-buttons">
           <WalletMultiButton className="btn btn-primary" />
