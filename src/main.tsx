@@ -9,8 +9,9 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import '@solana/wallet-adapter-react-ui/styles.css';
 import heroBg from './assets/home-hero.jpg';
+import { TOKEN_CONFIG } from './config/token';
 
-const endpoint = 'https://api.devnet.solana.com';
+const endpoint = TOKEN_CONFIG.SOLANA_RPC_URL;
 const wallets = [new PhantomWalletAdapter()];
 
 // Apply background image to body

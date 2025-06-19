@@ -6,8 +6,7 @@ import { useState, useEffect } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { saveShippingInfoForWallet, getShippingInfoForWallet } from '../utils/firestoreUser';
 import merchLogo from '../assets/merch-icon.png';
-
-const SOLANA_RPC = 'https://api.devnet.solana.com';
+import { TOKEN_CONFIG } from '../config/token';
 
 export default function HomePage() {
   const { publicKey, signMessage, connected } = useWallet();
@@ -46,7 +45,7 @@ export default function HomePage() {
       if (!publicKey || !verified) return;
       setLoadingBalances(true);
       try {
-        const connection = new Connection(SOLANA_RPC);
+        const connection = new Connection(TOKEN_CONFIG.SOLANA_RPC_URL);
         // Fetch SOL balance
         const sol = await connection.getBalance(publicKey);
         setSolBalance(sol / 1e9); // Convert lamports to SOL
@@ -133,6 +132,7 @@ export default function HomePage() {
             {verified && <div style={{ color: 'green', marginTop: 8 }}>Wallet ownership verified!</div>}
           </div>
         )}
+        
         {connected && verified && (
           <div className="wallet-info" style={{ margin: '32px auto', maxWidth: 400, boxShadow: '0 8px 32px rgba(0,0,0,0.6)', borderRadius: '1rem', background: 'rgba(26,26,26,0.9)', padding: '2rem', textAlign: 'center' }}>
             <div className="wallet-address" style={{ fontFamily: 'monospace', fontSize: '0.95rem', color: '#a1a1aa', marginBottom: 12, wordBreak: 'break-all' }}>
@@ -157,52 +157,55 @@ export default function HomePage() {
                 </ul>
               )}
             </div>
+            
             {/* Eligibility and Shipping Form */}
-            <div style={{ marginTop: 32 }}>
-              {eligible ? (
-                checkingShippingInfo ? (
-                  <div style={{ color: '#a1a1aa' }}>Checking for saved shipping info...</div>
-                ) : existingShippingInfo ? (
-                  <div style={{ color: '#10b981', fontWeight: 600, fontSize: '1.1rem' }}>
-                    Your shipping info is already saved.<br /><br />
-                    <div style={{ color: '#fff', fontWeight: 400, margin: '8px 0' }}>
-                      <strong>Name:</strong> {existingShippingInfo.name}<br />
-                      <strong>Address:</strong> {existingShippingInfo.shippingAddress}<br />
-                      <strong>Eligibility:</strong> {existingShippingInfo.eligible ? 'Eligible' : 'Not eligible'}
+            {solBalance !== null && (
+              <div style={{ marginTop: 24 }}>
+                {eligible ? (
+                  checkingShippingInfo ? (
+                    <div style={{ color: '#a1a1aa' }}>Checking for saved shipping info...</div>
+                  ) : existingShippingInfo ? (
+                    <div style={{ color: '#10b981', fontWeight: 600, fontSize: '1.1rem' }}>
+                      Your shipping info is already saved.<br /><br />
+                      <div style={{ color: '#fff', fontWeight: 400, margin: '8px 0' }}>
+                        <strong>Name:</strong> {existingShippingInfo.name}<br />
+                        <strong>Address:</strong> {existingShippingInfo.shippingAddress}<br />
+                        <strong>Eligibility:</strong> {existingShippingInfo.eligible ? 'Eligible' : 'Not eligible'}
+                      </div>
                     </div>
-                  </div>
-                ) : formSubmitted ? (
-                  <div style={{ color: '#10b981', fontWeight: 600, fontSize: '1.1rem' }}>Thank you! Your shipping info has been saved.</div>
+                  ) : formSubmitted ? (
+                    <div style={{ color: '#10b981', fontWeight: 600, fontSize: '1.1rem' }}>Thank you! Your shipping info has been saved.</div>
+                  ) : (
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div style={{ marginBottom: 8, color: '#fff', fontWeight: 600 }}>You are eligible for shipping!</div>
+                      <input
+                        type="text"
+                        placeholder="Full Name"
+                        value={name}
+                        onChange={e => setName(e.target.value)}
+                        disabled={saving}
+                        style={{ padding: 10, borderRadius: 8, border: '1px solid #27272a', marginBottom: 8 }}
+                        required
+                      />
+                      <textarea
+                        placeholder="Shipping Address"
+                        value={shippingAddress}
+                        onChange={e => setShippingAddress(e.target.value)}
+                        disabled={saving}
+                        style={{ padding: 10, borderRadius: 8, border: '1px solid #27272a', marginBottom: 8, minHeight: 60 }}
+                        required
+                      />
+                      <button className="btn btn-primary" type="submit" disabled={saving}>
+                        {saving ? 'Saving...' : 'Submit Shipping Info'}
+                      </button>
+                      {formError && <div style={{ color: 'red', marginTop: 8 }}>{formError}</div>}
+                    </form>
+                  )
                 ) : (
-                  <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    <div style={{ marginBottom: 8, color: '#fff', fontWeight: 600 }}>You are eligible for shipping!</div>
-                    <input
-                      type="text"
-                      placeholder="Full Name"
-                      value={name}
-                      onChange={e => setName(e.target.value)}
-                      disabled={saving}
-                      style={{ padding: 10, borderRadius: 8, border: '1px solid #27272a', marginBottom: 8 }}
-                      required
-                    />
-                    <textarea
-                      placeholder="Shipping Address"
-                      value={shippingAddress}
-                      onChange={e => setShippingAddress(e.target.value)}
-                      disabled={saving}
-                      style={{ padding: 10, borderRadius: 8, border: '1px solid #27272a', marginBottom: 8, minHeight: 60 }}
-                      required
-                    />
-                    <button className="btn btn-primary" type="submit" disabled={saving}>
-                      {saving ? 'Saving...' : 'Submit Shipping Info'}
-                    </button>
-                    {formError && <div style={{ color: 'red', marginTop: 8 }}>{formError}</div>}
-                  </form>
-                )
-              ) : (
-                <div style={{ color: '#f59e0b', fontWeight: 600 }}>You are not eligible for shipping (need at least 1 SOL).</div>
-              )}
-            </div>
+                  <div style={{ color: '#f59e0b', fontWeight: 600 }}>You are not eligible for shipping (need at least 1 SOL).</div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </main>

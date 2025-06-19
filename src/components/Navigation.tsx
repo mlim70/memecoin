@@ -3,14 +3,13 @@ import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useEffect, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import merchLogo from '../assets/merch-icon.png';
+import { TOKEN_CONFIG, isTokenConfigured, formatTokenBalance } from '../config/token';
 
 interface NavigationProps {
   currentPage: string;
 }
 
 export default function Navigation({ currentPage }: NavigationProps) {
-  // SPL token mint address (replace with actual address)
-  const TOKEN_MINT = 'TOKEN_MINT_ADDRESS_HERE';
   const { publicKey, connected } = useWallet();
   const { connection } = useConnection();
   const [tokenBalance, setTokenBalance] = useState<number | null>(null);
@@ -18,14 +17,17 @@ export default function Navigation({ currentPage }: NavigationProps) {
 
   useEffect(() => {
     const fetchTokenBalance = async () => {
-      if (!publicKey) return;
+      if (!publicKey || !isTokenConfigured()) return;
       setLoading(true);
       try {
         // Get associated token account address
-        const tokenAccount = await connection.getParsedTokenAccountsByOwner(publicKey, { mint: new PublicKey(TOKEN_MINT) });
+        const tokenAccount = await connection.getParsedTokenAccountsByOwner(publicKey, { 
+          mint: new PublicKey(TOKEN_CONFIG.MINT_ADDRESS) 
+        });
         const amount = tokenAccount.value[0]?.account.data.parsed.info.tokenAmount.uiAmount || 0;
         setTokenBalance(amount);
       } catch (e) {
+        console.error('Error fetching token balance:', e);
         setTokenBalance(0);
       }
       setLoading(false);
@@ -44,14 +46,17 @@ export default function Navigation({ currentPage }: NavigationProps) {
           <a href="/merch" className={`nav-link ${currentPage === 'merch' ? 'active' : ''}`}>Merch</a>
           <a href="/leaderboard" className={`nav-link ${currentPage === 'leaderboard' ? 'active' : ''}`}>Leaderboard</a>
           <a href="/account" className={`nav-link ${currentPage === 'account' ? 'active' : ''}`}>Account</a>
+          <a href="/admin" className={`nav-link ${currentPage === 'admin' ? 'active' : ''}`}>Admin</a>
         </nav>
         <div className="header-actions">
           {connected && (
             <div className="balance-display">
               {loading ? (
                 <span>Loading...</span>
+              ) : !isTokenConfigured() ? (
+                <span>Set token address</span>
               ) : (
-                <span>Balance: {tokenBalance?.toLocaleString() ?? '-'} </span>
+                <span>Balance: {formatTokenBalance(tokenBalance)} {TOKEN_CONFIG.SYMBOL}</span>
               )}
             </div>
           )}

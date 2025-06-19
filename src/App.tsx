@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage'
 import MerchPage from './pages/MerchPage'
 import LeaderboardPage from './pages/LeaderboardPage'
 import AccountPage from './pages/AccountPage'
+import AdminPage from './pages/AdminPage'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/merch" element={<MerchPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/account" element={<AccountPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </div>
   )
