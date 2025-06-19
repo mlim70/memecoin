@@ -15,10 +15,9 @@ export const runDrop = functions.https.onCall(async (data: any, context: any) =>
   const numWinners = data.numWinners || 1;
   const dropId = `drop_${Date.now()}`;
 
-  // 3. Fetch eligible users who haven't won yet
+  // 3. Fetch eligible users
   const snapshot = await db.collection("users")
     .where("eligible", "==", true)
-    .where("hasWonDrop", "==", false)
     .get();
 
   const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -27,7 +26,7 @@ export const runDrop = functions.https.onCall(async (data: any, context: any) =>
     throw new functions.https.HttpsError("failed-precondition", "Not enough eligible users.");
   }
 
-  // 4. Securely pick random winners
+  // 4. Securely pick random winners (prevents duplicates within same drop)
   const winners: typeof users = [];
   const usedIndexes = new Set<number>();
   while (winners.length < numWinners) {
@@ -38,28 +37,14 @@ export const runDrop = functions.https.onCall(async (data: any, context: any) =>
     }
   }
 
-  // 5. Update winners in Firestore and log the drop
-  const batch = db.batch();
-  winners.forEach(winner => {
-    const ref = db.collection("users").doc(winner.id);
-    batch.update(ref, {
-      hasWonDrop: true,
-      lastDropWon: dropId,
-      dropTimestamp: admin.firestore.FieldValue.serverTimestamp(),
-    });
-  });
-
-  // Log the drop event
+  // 5. Log the drop event (no user updates needed)
   const dropLogRef = db.collection("drops").doc(dropId);
-  batch.set(dropLogRef, {
+  await dropLogRef.set({
     dropId,
     winners: winners.map(w => w.id),
     timestamp: admin.firestore.FieldValue.serverTimestamp(),
     numWinners,
   });
 
-  await batch.commit();
-
-  // Avoid overwriting 'id' property
   return { dropId, winners: winners.map(w => ({ ...w, id: w.id })) };
 }); 
