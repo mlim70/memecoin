@@ -61,6 +61,8 @@ body {
   background-clip: text;
   letter-spacing: -0.025em;
   flex-shrink: 0;
+  text-align: left;
+  margin-right: auto;
 }
 
 /* Navigation Bar */
@@ -68,7 +70,7 @@ body {
   display: flex;
   align-items: center;
   gap: 2rem;
-  justify-content: center;
+  justify-content: flex-end;
   flex: 1;
 }
 
@@ -98,6 +100,7 @@ body {
   align-items: center;
   gap: 1.5rem;
   flex-shrink: 0;
+  justify-content: flex-end;
 }
 
 .balance-display {
