@@ -3,7 +3,6 @@ import Navigation from '../components/Navigation';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
-import { Buffer } from 'buffer';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { saveShippingInfoForWallet, getShippingInfoForWallet } from '../utils/firestoreUser';
 
@@ -32,7 +31,7 @@ export default function HomePage() {
       if (!publicKey || !signMessage) throw new Error('Wallet not connected or signing not supported');
       const message = `Sign this message to verify wallet ownership: ${publicKey.toBase58()} at ${new Date().toISOString()}`;
       const encodedMessage = new TextEncoder().encode(message);
-      const signature = await signMessage(encodedMessage);
+      await signMessage(encodedMessage);
       setVerified(true);
     } catch (e: any) {
       setError(e.message || 'Verification failed');
@@ -145,7 +144,7 @@ export default function HomePage() {
                 <div style={{ color: '#a1a1aa' }}>No SPL tokens found</div>
               ) : (
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                  {tokenBalances.map((token, i) => (
+                  {tokenBalances.map((token) => (
                     <li key={token.mint} style={{ color: '#e1e1e6', margin: '4px 0' }}>
                       <span style={{ fontWeight: 600 }}>{token.amount}</span> <span style={{ color: '#6366f1' }}>{token.symbol || token.mint.slice(0,4)+'...'}</span>
                     </li>
