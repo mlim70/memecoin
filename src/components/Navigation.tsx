@@ -41,7 +41,7 @@ export default function Navigation({ currentPage }: NavigationProps) {
         </div>
         <nav className="nav-bar">
           <a href="/" className={`nav-link ${currentPage === 'home' ? 'active' : ''}`}>Home</a>
-          <a href="/dashboard" className={`nav-link ${currentPage === 'dashboard' ? 'active' : ''}`}>Dashboard</a>
+          <a href="/merch" className={`nav-link ${currentPage === 'merch' ? 'active' : ''}`}>Merch</a>
           <a href="/leaderboard" className={`nav-link ${currentPage === 'leaderboard' ? 'active' : ''}`}>Leaderboard</a>
           <a href="/account" className={`nav-link ${currentPage === 'account' ? 'active' : ''}`}>Account</a>
         </nav>
@@ -59,4 +59,4 @@ export default function Navigation({ currentPage }: NavigationProps) {
       </div>
     </header>
   );
-} 
+}

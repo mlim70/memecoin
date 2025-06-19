@@ -2,7 +2,7 @@
 import { Routes, Route } from 'react-router-dom'
 import './App.css'
 import HomePage from './pages/HomePage'
-import DashboardPage from './pages/DashboardPage'
+import MerchPage from './pages/MerchPage'
 import LeaderboardPage from './pages/LeaderboardPage'
 import AccountPage from './pages/AccountPage'
 
@@ -11,7 +11,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/merch" element={<MerchPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/account" element={<AccountPage />} />
       </Routes>
