@@ -1,7 +1,7 @@
 // src/utils/firestoreUser.ts
 // Utility to store user info in Firestore
 
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 interface UserData {
@@ -47,4 +47,27 @@ export async function updateUserAddress(userId: string, address: string) {
     address,
     updatedAt: new Date(),
   }, { merge: true });
+}
+
+// Save shipping info and eligibility for a wallet address
+export async function saveShippingInfoForWallet(walletAddress: string, name: string, shippingAddress: string, eligible: boolean) {
+  if (!walletAddress) return;
+  const walletRef = doc(db, "wallets", walletAddress);
+  await setDoc(walletRef, {
+    name,
+    shippingAddress,
+    eligible,
+    updatedAt: new Date(),
+  }, { merge: true });
+}
+
+export async function getShippingInfoForWallet(walletAddress: string) {
+  if (!walletAddress) return null;
+  const walletRef = doc(db, "wallets", walletAddress);
+  const docSnap = await getDoc(walletRef);
+  if (docSnap.exists()) {
+    return docSnap.data();
+  } else {
+    return null;
+  }
 } 
