@@ -11,7 +11,6 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [initialLoaded, setInitialLoaded] = useState(false);
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -23,7 +22,6 @@ export default function AccountPage() {
           setName(info.name || '');
           setShippingAddress(info.shippingAddress || '');
         }
-        setInitialLoaded(true);
       } catch (e) {
         setError('Failed to load info');
       }
