@@ -46,7 +46,6 @@ export default function Navigation({ currentPage }: NavigationProps) {
           <a href="/merch" className={`nav-link ${currentPage === 'merch' ? 'active' : ''}`}>Merch</a>
           <a href="/leaderboard" className={`nav-link ${currentPage === 'leaderboard' ? 'active' : ''}`}>Leaderboard</a>
           <a href="/account" className={`nav-link ${currentPage === 'account' ? 'active' : ''}`}>Account</a>
-          <a href="/admin" className={`nav-link ${currentPage === 'admin' ? 'active' : ''}`}>Admin</a>
         </nav>
         <div className="header-actions">
           {connected && (

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,8 +19,6 @@
     "@solana/web3.js": "^1.87.6",
     "@walletconnect/utils": "^2.11.2",
     "firebase": "^11.9.1",
-    "firebase-admin": "^13.4.0",
-    "firebase-functions": "^6.3.2",
     "jwt-decode": "^4.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -39,8 +37,5 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.1",
     "vite": "^5.0.8"
-  },
-  "overrides": {
-    "@types/web": "npm:empty-package@1.0.0"
   }
 }

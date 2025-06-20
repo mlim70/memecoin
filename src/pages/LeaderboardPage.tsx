@@ -5,12 +5,13 @@ import { useState, useEffect } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import { TOKEN_CONFIG, isTokenConfigured, formatTokenBalance, getNetworkName } from '../config/token';
 import { checkDropEligibility } from '../utils/dropUtils';
+import type { EligibilityInfo } from '../types/global';
 
 export default function LeaderboardPage() {
   const { publicKey, connected } = useWallet();
   const { connection } = useConnection();
   const [userBalance, setUserBalance] = useState<number | null>(null);
-  const [userEligibility, setUserEligibility] = useState<any>(null);
+  const [userEligibility, setUserEligibility] = useState<EligibilityInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [networkName, setNetworkName] = useState<string>('');
 
@@ -33,7 +34,7 @@ export default function LeaderboardPage() {
 
         // Check eligibility
         const eligibility = await checkDropEligibility(publicKey.toBase58());
-        setUserEligibility(eligibility);
+        setUserEligibility(eligibility as EligibilityInfo);
       } catch (e) {
         console.error('Error fetching user data:', e);
         setUserBalance(0);

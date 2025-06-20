@@ -1,5 +1,5 @@
 // src/firebase.ts
-// Firebase configuration and initialization
+// Firebase configuration and initialization for data storage
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
