@@ -2,126 +2,11 @@
 import Navigation from '../components/Navigation';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useState, useEffect } from 'react';
-import { saveShippingInfoForWallet, getShippingInfoForWallet } from '../utils/firestoreUser';
-import { checkDropEligibility, getEligibilityMessage, getEligibilityStatus, getEligibilityColor } from '../utils/dropUtils';
 import merchLogo from '../assets/merch-icon.png';
-import { TOKEN_CONFIG, isTokenConfigured } from '../config/token';
-import type { UserInfo } from '../types/global';
+import { TOKEN_CONFIG } from '../config/token';
 
 export default function HomePage() {
-  const { publicKey, connected } = useWallet();
-  const [manualWalletAddress, setManualWalletAddress] = useState('');
-  const [useManualInput, setUseManualInput] = useState(false);
-  const [tokenBalance, setTokenBalance] = useState<number | null>(null);
-  const [isEligible, setIsEligible] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [shippingInfo, setShippingInfo] = useState<Partial<UserInfo>>({});
-  const [isShippingFormVisible, setIsShippingFormVisible] = useState(false);
-  const [isShippingSaved, setIsShippingSaved] = useState(false);
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [shippingAddress, setShippingAddress] = useState('');
-  const [name, setName] = useState('');
-
-  // Get the active wallet address (connected wallet or manual input)
-  const activeWalletAddress = connected ? publicKey?.toBase58() : (useManualInput ? manualWalletAddress : '');
-
-  useEffect(() => {
-    // Auto-check eligibility when wallet connects or manual address is entered
-    if (activeWalletAddress && isValidWalletAddress(activeWalletAddress)) {
-      loadShippingInfo();
-      checkEligibility();
-    }
-  }, [activeWalletAddress]);
-
-  const isValidWalletAddress = (address: string): boolean => {
-    return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
-  };
-
-  const loadShippingInfo = async () => {
-    if (!activeWalletAddress) return;
-    
-    try {
-      const info = await getShippingInfoForWallet(activeWalletAddress);
-      if (info) {
-        setShippingInfo(info as UserInfo);
-        setIsShippingSaved(true);
-      }
-    } catch (err: unknown) {
-      console.error('Error loading shipping info:', err);
-    }
-  };
-
-  const checkEligibility = async () => {
-    if (!isTokenConfigured()) {
-      setError('Token configuration is not set up.');
-      return;
-    }
-
-    if (!activeWalletAddress || !isValidWalletAddress(activeWalletAddress)) {
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const eligibility = await checkDropEligibility(activeWalletAddress);
-      setTokenBalance(eligibility.tokenBalance);
-      setIsEligible(eligibility.isEligible);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to check eligibility.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleManualInputSubmit = () => {
-    if (!manualWalletAddress || !isValidWalletAddress(manualWalletAddress)) {
-      setError('Please enter a valid Solana wallet address.');
-      return;
-    }
-    setUseManualInput(true);
-    setError(null);
-  };
-
-  const handleShippingSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!activeWalletAddress || !isValidWalletAddress(activeWalletAddress)) {
-      setError('Please enter a valid wallet address first.');
-      return;
-    }
-
-    if (!shippingInfo.name || !shippingInfo.shippingAddress) {
-      setError('Please fill in all shipping information.');
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      await saveShippingInfoForWallet(
-        activeWalletAddress,
-        shippingInfo.name,
-        shippingInfo.shippingAddress,
-        shippingInfo.username, 
-        shippingInfo.email
-      );
-      setIsShippingSaved(true);
-      setIsShippingFormVisible(false);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to save shipping information.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const eligibilityStatus = getEligibilityStatus(tokenBalance || 0);
-  const eligibilityColor = getEligibilityColor(eligibilityStatus);
+  const { connected } = useWallet();
 
   return (
     <div className="main-container" style={{ minHeight: 'calc(100vh - 0px)', display: 'flex', flexDirection: 'column' }}>
@@ -154,10 +39,4 @@ export default function HomePage() {
       </main>
     </div>
   );
-}
-
-// Helper function to format wallet address
-const formatWalletAddress = (address: string): string => {
-  if (!address || address.length < 8) return address;
-  return `${address.slice(0, 4)}...${address.slice(-4)}`;
-}; 
+} 

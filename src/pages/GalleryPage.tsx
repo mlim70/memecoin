@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Navigation from '../components/Navigation';
 
 const NUM_GALLERY_SLOTS = 6;
