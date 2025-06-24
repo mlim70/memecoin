@@ -1,7 +1,7 @@
 // src/utils/firestoreUser.ts
 // Firestore utilities for storing user/wallet data
 
-import { doc, setDoc, getDoc, collection, query, where, getDocs, orderBy, limit, startAfter } from "firebase/firestore";
+import { doc, setDoc, getDoc, collection, query, getDocs, orderBy, limit, startAfter } from "firebase/firestore";
 import { db } from "../firebase";
 import type { UserInfo } from '../types/global';
 import { Connection, PublicKey } from '@solana/web3.js';
@@ -10,7 +10,6 @@ import { TOKEN_CONFIG } from '../config/token';
 // Save shipping information for a wallet (with username, email, and shippingAddress)
 export const saveShippingInfoForWallet = async (
   walletAddress: string,
-  name: string,
   shippingAddress: string,
   username?: string,
   email?: string
@@ -19,7 +18,6 @@ export const saveShippingInfoForWallet = async (
     const userRef = doc(db, "users", walletAddress);
     await setDoc(userRef, {
       walletAddress,
-      name,
       shippingAddress,
       username: username || '',
       email: email || '',
@@ -52,12 +50,19 @@ export const getShippingInfoForWallet = async (walletAddress: string) => {
 export const getEligibleUsers = async () => {
   try {
     const usersRef = collection(db, "users");
-    const q = query(usersRef, where("balance", ">=", TOKEN_CONFIG.MINIMUM_BALANCE_FOR_DROPS));
-    const querySnapshot = await getDocs(q);
-    const eligibleUsers: unknown[] = [];
+    // Get all users first, then filter in memory for debugging
+    const querySnapshot = await getDocs(usersRef);
+    const allUsers: unknown[] = [];
     querySnapshot.forEach((doc) => {
-      eligibleUsers.push(doc.data());
+      allUsers.push(doc.data());
     });
+    
+    // Filter users with sufficient balance
+    const eligibleUsers = allUsers.filter((user: any) => {
+      const balance = user.balance || 0;
+      return balance >= TOKEN_CONFIG.MINIMUM_BALANCE_FOR_DROPS;
+    });
+    
     return eligibleUsers;
   } catch (error) {
     console.error("Error getting eligible users:", error);
@@ -84,33 +89,46 @@ export const getDropHistory = async () => {
 };
 
 // Get a page of leaderboard users, ordered by balance descending
-export const getLeaderboardPage = async (pageSize = 20, startAfterBalance: number | null | undefined = undefined): Promise<{ users: UserInfo[]; nextCursor: number | null }> => {
+export const getLeaderboardPage = async (pageSize = 20, startAfterDoc: any = null): Promise<{ users: UserInfo[]; nextCursor: any }> => {
   try {
     const usersRef = collection(db, "users");
     let q;
-    if (typeof startAfterBalance === 'number') {
+    
+    if (startAfterDoc) {
       q = query(
         usersRef,
-        where("balance", ">=", TOKEN_CONFIG.MINIMUM_BALANCE_FOR_DROPS),
         orderBy("balance", "desc"),
-        startAfter(startAfterBalance),
+        startAfter(startAfterDoc),
         limit(pageSize)
       );
     } else {
       q = query(
         usersRef,
-        where("balance", ">=", TOKEN_CONFIG.MINIMUM_BALANCE_FOR_DROPS),
         orderBy("balance", "desc"),
         limit(pageSize)
       );
     }
+    
     const querySnapshot = await getDocs(q);
     const users: UserInfo[] = [];
+    const seenAddresses = new Set<string>();
+    
     querySnapshot.forEach((doc) => {
-      users.push(doc.data() as UserInfo);
+      const userData = doc.data();
+      const walletAddress = userData.walletAddress;
+      
+      // Check for duplicates
+      if (seenAddresses.has(walletAddress)) {
+        console.warn('DUPLICATE WALLET ADDRESS FOUND:', walletAddress);
+      } else {
+        seenAddresses.add(walletAddress);
+        users.push(userData as UserInfo);
+      }
     });
-    const last = querySnapshot.docs[querySnapshot.docs.length - 1];
-    const nextCursor = last ? last.data().balance : null;
+    
+    const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+    const nextCursor = lastDoc || null;
+    
     return { users, nextCursor };
   } catch (error) {
     console.error("Error getting leaderboard page:", error);
@@ -153,5 +171,21 @@ export const getUserBalance = async (walletAddress: string): Promise<number | nu
   } catch (error) {
     console.error("Error getting user balance:", error);
     return null;
+  }
+};
+
+// Update user balance from Solana
+export const updateUserBalance = async (walletAddress: string) => {
+  const connection = new Connection(TOKEN_CONFIG.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com');
+  const mint = new PublicKey(TOKEN_CONFIG.MINT_ADDRESS);
+  try {
+    const tokenAccounts = await connection.getParsedTokenAccountsByOwner(new PublicKey(walletAddress), { mint });
+    let balance = 0;
+    if (tokenAccounts.value.length > 0) {
+      balance = tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount || 0;
+    }
+    await setDoc(doc(db, 'users', walletAddress), { balance, updatedAt: new Date().toISOString() }, { merge: true });
+  } catch (e) {
+    console.error(`Error updating balance for ${walletAddress}:`, e);
   }
 }; 

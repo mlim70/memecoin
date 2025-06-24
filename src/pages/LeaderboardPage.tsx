@@ -12,25 +12,52 @@ type UserInfo = UserInfoBase & { balance?: number };
 
 export default function LeaderboardPage() {
   const [users, setUsers] = useState<UserInfo[]>([]);
-  const [nextCursor, setNextCursor] = useState<number | null>(null);
+  const [nextCursor, setNextCursor] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [totalUsers, setTotalUsers] = useState<number | null>(null);
   const [eligibleUsers, setEligibleUsers] = useState<number | null>(null);
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const initialLoadDoneRef = useRef(false);
   const { publicKey, connected } = useWallet();
 
   const loadLeaderboard = useCallback(async (initial = false) => {
-    if (loading) return;
+    if (loading) {
+      return;
+    }
+    
     setLoading(true);
-    const { users: newUsers, nextCursor: newCursor } = await getLeaderboardPage(30, initial ? null : nextCursor);
-    setUsers(prev => initial ? newUsers : [...prev, ...newUsers]);
-    setNextCursor(newCursor);
-    setHasMore(!!newCursor && newUsers.length > 0);
-    setLoading(false);
+    
+    try {
+      const { users: newUsers, nextCursor: newCursor } = await getLeaderboardPage(30, initial ? null : nextCursor);
+      
+      if (initial) {
+        setUsers(newUsers);
+      } else {
+        setUsers(prev => {
+          // Deduplicate by wallet address
+          const existingAddresses = new Set(prev.map(u => u.walletAddress));
+          const uniqueNewUsers = newUsers.filter(user => !existingAddresses.has(user.walletAddress));
+          return [...prev, ...uniqueNewUsers];
+        });
+      }
+      
+      setNextCursor(newCursor);
+      setHasMore(!!newCursor && newUsers.length > 0);
+    } catch (error) {
+      console.error('Error loading leaderboard:', error);
+    } finally {
+      setLoading(false);
+    }
   }, [nextCursor, loading]);
 
   useEffect(() => {
+    if (initialLoadDoneRef.current) {
+      return;
+    }
+    
+    initialLoadDoneRef.current = true;
+    
     loadLeaderboard(true);
     // Fetch all users
     (async () => {
@@ -45,13 +72,22 @@ export default function LeaderboardPage() {
   // Infinite scroll observer
   useEffect(() => {
     if (!hasMore || loading) return;
+    
     const observer = new window.IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
         loadLeaderboard();
       }
     }, { threshold: 1 });
-    if (loaderRef.current) observer.observe(loaderRef.current);
-    return () => { if (loaderRef.current) observer.unobserve(loaderRef.current); };
+    
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+    
+    return () => { 
+      if (loaderRef.current) {
+        observer.unobserve(loaderRef.current);
+      }
+    };
   }, [hasMore, loading, loadLeaderboard]);
 
   // Find current user's rank in the loaded users
@@ -94,6 +130,7 @@ export default function LeaderboardPage() {
             Leaderboard
           </h1>
           <p style={{ color: '#c7d2fe', marginBottom: 16, fontSize: '1.05rem', fontWeight: 500 }}>Top {TOKEN_CONFIG.SYMBOL} holders</p>
+          
           {connected && userWallet && userRank >= 0 && (
             <div style={{ marginBottom: 16, fontWeight: 600, color: '#6366f1', fontSize: '1.15rem' }}>
               Your rank: #{userRank + 1}
@@ -110,13 +147,13 @@ export default function LeaderboardPage() {
                 <div style={{ padding: 64, color: '#6b7280', textAlign: 'center', fontSize: '1.2rem' }}>No users found.</div>
               )}
               {users.map((user, idx) => (
-                <div key={user.walletAddress} style={{ display: 'grid', gridTemplateColumns: '120px 2fr 1fr', alignItems: 'center', borderBottom: '1.5px solid #23272f', background: idx < 3 ? getRowStyle(idx).background : (idx % 2 === 0 ? 'rgba(36,37,46,0.85)' : 'rgba(30,31,38,0.85)'), fontWeight: getRowStyle(idx).fontWeight, color: getRowStyle(idx).color, fontSize: idx < 3 ? '1.35rem' : '1.18rem', boxShadow: idx < 3 ? '0 2px 12px rgba(0,0,0,0.08)' : undefined, padding: '0 0.5rem' }}>
+                <div key={`${user.walletAddress}-${idx}`} style={{ display: 'grid', gridTemplateColumns: '120px 2fr 1fr', alignItems: 'center', borderBottom: '1.5px solid #23272f', background: idx < 3 ? getRowStyle(idx).background : (idx % 2 === 0 ? 'rgba(36,37,46,0.85)' : 'rgba(30,31,38,0.85)'), fontWeight: getRowStyle(idx).fontWeight, color: getRowStyle(idx).color, fontSize: idx < 3 ? '1.35rem' : '1.18rem', boxShadow: idx < 3 ? '0 2px 12px rgba(0,0,0,0.08)' : undefined, padding: '0 0.5rem' }}>
                   <div style={{ textAlign: 'center', fontWeight: 800 }}>{idx + 1}</div>
                   <div style={{ textAlign: 'center', fontWeight: 700 }}>
                     {user.username ? user.username : user.walletAddress.slice(0, 6) + '...' + user.walletAddress.slice(-4)}
                   </div>
                   <div style={{ textAlign: 'center', fontVariantNumeric: 'tabular-nums', fontWeight: 800 }}>
-                    {user.balance?.toLocaleString() ?? '0'} {TOKEN_CONFIG.SYMBOL}
+                    {user.balance.toLocaleString()} {TOKEN_CONFIG.SYMBOL}
                   </div>
                 </div>
               ))}

@@ -95,13 +95,11 @@ Drop completed!
   "winners": [
     {
       "walletAddress": "ABC1234567890123456789012345678901234567890",
-      "tokenBalance": 1500,
-      "name": "User ABC12345..."
+      "tokenBalance": 1500
     },
     {
       "walletAddress": "DEF1234567890123456789012345678901234567890",
-      "tokenBalance": 2200,
-      "name": "User DEF12345..."
+      "tokenBalance": 2200
     }
   ],
   "totalEligibleUsers": 15,

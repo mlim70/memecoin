@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { checkDropEligibility } from '../utils/dropUtils';
-import { saveShippingInfoForWallet, getShippingInfoForWallet } from '../utils/firestoreUser';
+import { saveShippingInfoForWallet, getShippingInfoForWallet, updateUserBalance } from '../utils/firestoreUser';
 import { isTokenConfigured } from '../config/token';
 import type { UserInfo } from '../types/global';
 import Navigation from '../components/Navigation';
@@ -30,6 +30,12 @@ const AccountPage: React.FC = () => {
       checkEligibility();
     }
   }, [publicKey]);
+
+  useEffect(() => {
+    if (publicKey && connected) {
+      updateUserBalance(publicKey.toBase58());
+    }
+  }, [publicKey, connected]);
 
   // Initialize form fields when shipping info is loaded
   useEffect(() => {
@@ -99,7 +105,6 @@ const AccountPage: React.FC = () => {
     try {
       await saveShippingInfoForWallet(
         publicKey.toBase58(),
-        shippingInfo.name || '',
         shippingAddress,
         username,
         email

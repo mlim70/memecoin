@@ -78,8 +78,7 @@ export default async function handler(req, res) {
         if (tokenBalance >= MINIMUM_BALANCE) {
           eligibleUsers.push({
             walletAddress,
-            tokenBalance,
-            name: `User ${walletAddress.slice(0, 8)}...`
+            tokenBalance
           });
         }
       } catch (error) {

@@ -29,19 +29,13 @@ export interface DropResult {
   timestamp: string;
 }
 
-// Backend connection status
-export interface BackendStatus {
-  success: boolean;
-  message: string;
-}
-
 // User information stored in Firebase
 export interface UserInfo {
   walletAddress: string;
-  name: string;
   shippingAddress: string;
   username: string;
   email: string;
+  balance: number;
   updatedAt: string;
 }
 
@@ -56,26 +50,4 @@ export interface DropHistoryEntry {
   numWinners: number;
   timestamp: string;
   createdAt: string;
-}
-
-// Navigation item for the app
-export interface NavigationItem {
-  name: string;
-  href: string;
-  current: boolean;
-}
-
-// Environment variables interface
-export interface EnvironmentVariables {
-  VITE_TOKEN_SYMBOL: string;
-  VITE_TOKEN_MINT_ADDRESS: string;
-  VITE_MINIMUM_BALANCE_FOR_DROPS: string;
-  VITE_SOLANA_RPC_URL: string;
-  VITE_API_BASE_URL?: string;
-  VITE_FIREBASE_API_KEY: string;
-  VITE_FIREBASE_AUTH_DOMAIN: string;
-  VITE_FIREBASE_PROJECT_ID: string;
-  VITE_FIREBASE_STORAGE_BUCKET: string;
-  VITE_FIREBASE_MESSAGING_SENDER_ID: string;
-  VITE_FIREBASE_APP_ID: string;
 } 

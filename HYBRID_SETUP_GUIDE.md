@@ -183,8 +183,7 @@ const eligibility = await checkDropEligibility(walletAddress);
   "winners": [
     {
       "walletAddress": "ABC123...",
-      "tokenBalance": 1500,
-      "name": "User ABC123..."
+      "tokenBalance": 1500
     }
   ],
   "timestamp": "2024-01-01T00:00:00.000Z",

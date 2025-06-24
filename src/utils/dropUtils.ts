@@ -22,11 +22,6 @@ export interface DropResult {
   timestamp: string;
 }
 
-export interface BackendStatus {
-  success: boolean;
-  message: string;
-}
-
 // Format wallet address for display
 export const formatWalletAddress = (address: string): string => {
   if (!address || address.length < 8) return address;
@@ -36,34 +31,6 @@ export const formatWalletAddress = (address: string): string => {
 // Validate wallet address format
 export const isValidWalletAddress = (address: string): boolean => {
   return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
-};
-
-// Test connection to Vercel backend
-export const testBackendConnection = async (): Promise<BackendStatus> => {
-  try {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-    const response = await fetch(`${baseUrl}/test`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return {
-      success: true,
-      message: data.message || 'Backend connection successful',
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : 'Failed to connect to backend',
-    };
-  }
 };
 
 // Check if a wallet is eligible for drops
