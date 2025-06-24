@@ -74,11 +74,11 @@ const AccountPage: React.FC = () => {
       setError('Please enter a valid wallet address first.');
       return;
     }
-    if (!shippingInfo.username || !shippingInfo.email || !confirmEmail || !shippingInfo.shippingAddress) {
+    if (!username || !email || !confirmEmail || !shippingAddress) {
       setError('Please fill in all fields.');
       return;
     }
-    if (shippingInfo.email !== confirmEmail) {
+    if (email !== confirmEmail) {
       setError('Email and Confirm Email must match.');
       return;
     }
