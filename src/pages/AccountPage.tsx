@@ -120,12 +120,12 @@ const AccountPage: React.FC = () => {
   };
 
   return (
-    <div className="main-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className="main-container" style={{ height: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column', paddingTop: 0 }}>
       <Navigation currentPage="account" />
-      <main className="page-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 80px)', maxHeight: 'calc(100vh - 80px)'}}>
-        <div className="max-w-2xl mx-auto" style={{ width: '100%', maxWidth: 1100, padding: '48px 0', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}> 
+      <main className="page-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', maxHeight: 'calc(100vh - 120px)'}}>
+        <div className="max-w-2xl mx-auto" style={{ width: '100%', maxWidth: 1100, padding: '24px 0 48px 0', height: '100%', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}> 
           {/* Tabs and Card side by side, content always centered, no overlay, no absolute */}
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', gap: 40, maxWidth: 1000, margin: '0 auto', transform: 'translateX(-100px)' }}>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', gap: 40, maxWidth: 1000, margin: '0 auto', transform: 'translateX(-100px) translateY(80px)'}}>
             {/* Tabs Container - left side*/}
             <div style={{ minWidth: 170, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4, background: '#f6f7fa', borderRadius: 14, border: '1.5px solid #e5e7eb', padding: '18px 0', height: 'fit-content', boxShadow: '0 2px 12px rgba(24,24,27,0.08)' }}>
               <button
@@ -181,13 +181,13 @@ const AccountPage: React.FC = () => {
               )}
             </div>
             {/* Main Card Content */}
-            <div style={{ margin: '0 auto', background: '#fff', borderRadius: '1.25rem', boxShadow: '0 4px 24px rgba(24,24,27,0.08)', padding: '2.5rem', width: '100%', maxWidth: 700, maxHeight: '100%', display: 'flex', flexDirection: 'column', overflow: 'auto', minHeight: 500 }}>
+            <div style={{ margin: '0 auto', background: '#fff', borderRadius: '1.25rem', boxShadow: '0 4px 24px rgba(24,24,27,0.08)', padding: '2rem', width: '100%', maxWidth: 700, maxHeight: '100%', display: 'flex', flexDirection: 'column', minHeight: 500 }}>
               {/* Tab Content */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 {activeTab === 'edit' && (
                   <>
                     {/* Header row with Account title and wallet button */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
                       <h1 style={{ fontSize: '2rem', fontWeight: 700, color: '#18181b', margin: 0 }}>Account</h1>
                       {connected && publicKey && (
                         <WalletMultiButton className="btn btn-primary" />
@@ -195,7 +195,7 @@ const AccountPage: React.FC = () => {
                     </div>
                     {/* Only show connect wallet section if not connected */}
                     { !connected && (
-                      <div style={{ marginBottom: 32 }}>
+                      <div style={{ marginBottom: 28 }}>
                         <h2 style={{ fontSize: '1.15rem', fontWeight: 600, color: '#27272a', marginBottom: 16 }}>Connect Your Wallet</h2>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
                           <WalletMultiButton className="btn btn-primary" />
@@ -207,7 +207,7 @@ const AccountPage: React.FC = () => {
                     )}
                     {/* If connected, show horizontal form */}
                     { connected && publicKey && (
-                      <form onSubmit={handleShippingSubmit} style={{ background: '#f9fafb', borderRadius: 12, padding: 32, maxWidth: 700, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 22, boxShadow: '0 2px 12px rgba(24,24,27,0.06)' }}>
+                      <form onSubmit={handleShippingSubmit} style={{ background: '#f9fafb', borderRadius: 12, padding: 24, maxWidth: 700, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 18, boxShadow: '0 2px 12px rgba(24,24,27,0.06)' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                           <label htmlFor="username" style={{ fontWeight: 500, color: '#27272a', marginBottom: 4 }}>Username</label>
                           <input
