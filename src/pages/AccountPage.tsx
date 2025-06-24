@@ -2,27 +2,23 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { checkDropEligibility, getEligibilityMessage, getEligibilityStatus, getEligibilityColor } from '../utils/dropUtils';
+import { checkDropEligibility } from '../utils/dropUtils';
 import { saveShippingInfoForWallet, getShippingInfoForWallet } from '../utils/firestoreUser';
-import { TOKEN_CONFIG, isTokenConfigured } from '../config/token';
+import { isTokenConfigured } from '../config/token';
 import type { UserInfo } from '../types/global';
 import Navigation from '../components/Navigation';
 import ProfilePage from './ProfilePage';
 
 const AccountPage: React.FC = () => {
   const { publicKey, connected } = useWallet();
-  const [tokenBalance, setTokenBalance] = useState<number | null>(null);
-  const [isEligible, setIsEligible] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shippingInfo, setShippingInfo] = useState<Partial<UserInfo>>({});
   const [isShippingFormVisible, setIsShippingFormVisible] = useState(false);
-  const [isShippingSaved, setIsShippingSaved] = useState(false);
   const [confirmEmail, setConfirmEmail] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [shippingAddress, setShippingAddress] = useState('');
-  const [name, setName] = useState('');
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
 
   useEffect(() => {
@@ -44,7 +40,6 @@ const AccountPage: React.FC = () => {
       const info = await getShippingInfoForWallet(publicKey.toBase58());
       if (info) {
         setShippingInfo(info as UserInfo);
-        setIsShippingSaved(true);
       }
     } catch (err: unknown) {
       console.error('Error loading shipping info:', err);
@@ -65,9 +60,7 @@ const AccountPage: React.FC = () => {
     setError(null);
 
     try {
-      const eligibility = await checkDropEligibility(publicKey.toBase58());
-      setTokenBalance(eligibility.tokenBalance);
-      setIsEligible(eligibility.isEligible);
+      await checkDropEligibility(publicKey.toBase58());
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to check eligibility.');
     } finally {
@@ -94,12 +87,11 @@ const AccountPage: React.FC = () => {
     try {
       await saveShippingInfoForWallet(
         publicKey.toBase58(),
-        name,
+        shippingInfo.name || '',
         shippingAddress,
         username,
         email
       );
-      setIsShippingSaved(true);
       setIsShippingFormVisible(false);
     } catch (err: unknown) {
       setError('Failed to save shipping info.');
@@ -107,9 +99,6 @@ const AccountPage: React.FC = () => {
       setIsLoading(false);
     }
   };
-
-  const eligibilityStatus = getEligibilityStatus(tokenBalance || 0);
-  const eligibilityColor = getEligibilityColor(eligibilityStatus);
 
   return (
     <div className="main-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -289,12 +278,6 @@ const AccountPage: React.FC = () => {
       </main>
     </div>
   );
-};
-
-// Helper function to format wallet address
-const formatWalletAddress = (address: string): string => {
-  if (!address || address.length < 8) return address;
-  return `${address.slice(0, 4)}...${address.slice(-4)}`;
 };
 
 export default AccountPage; 
