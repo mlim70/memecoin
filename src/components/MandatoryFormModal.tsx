@@ -44,7 +44,6 @@ const MandatoryFormModal: React.FC = () => {
     try {
       await saveShippingInfoForWallet(
         publicKey.toBase58(),
-        profileData?.name || '',
         shippingAddress,
         username,
         email

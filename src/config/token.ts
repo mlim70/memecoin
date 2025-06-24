@@ -29,18 +29,4 @@ export const isTokenConfigured = (): boolean => {
 export const formatTokenBalance = (balance: number | null): string => {
   if (balance === null) return '0';
   return balance.toLocaleString();
-};
-
-// Helper function to get network name
-export const getNetworkName = (): string => {
-  const rpcUrl = TOKEN_CONFIG.SOLANA_RPC_URL;
-  if (rpcUrl.includes('devnet')) return 'Devnet';
-  if (rpcUrl.includes('mainnet')) return 'Mainnet';
-  if (rpcUrl.includes('testnet')) return 'Testnet';
-  return 'Custom';
-};
-
-// Helper function to check if we're on mainnet
-export const isMainnet = (): boolean => {
-  return TOKEN_CONFIG.SOLANA_RPC_URL.includes('mainnet');
 }; 

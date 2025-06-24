@@ -117,8 +117,7 @@ def main():
         if balance >= MINIMUM_BALANCE:
             eligible_users.append({
                 'walletAddress': wallet,
-                'tokenBalance': balance,
-                'name': f'User {wallet[:8]}...'
+                'tokenBalance': balance
             })
 
     if len(eligible_users) < num_winners:
