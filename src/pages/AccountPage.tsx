@@ -12,7 +12,7 @@ import { useProfile } from '../contexts/ProfileContext';
 
 const AccountPage: React.FC = () => {
   const { publicKey, connected } = useWallet();
-  const { profileData, checkProfileCompletion } = useProfile();
+  const { checkProfileCompletion } = useProfile();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shippingInfo, setShippingInfo] = useState<Partial<UserInfo>>({});
