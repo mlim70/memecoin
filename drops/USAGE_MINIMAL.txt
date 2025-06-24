@@ -1,0 +1,28 @@
+Instructions for Running a Drop
+============================================
+
+1. Open a terminal (Command Prompt or PowerShell).
+2. Go to the project folder (where this file is located).
+3. Run this command (replace 3 with the number of winners you want):
+
+   python admin_drop.py --num-winners 3
+
+4. Wait for the script to finish. The winners will be shown on the screen.
+
+If you need help, contact your tech support.
+
+-------------------------
+Command Line Examples
+-------------------------
+
+# 1. Run a drop with 5 winners (from Firebase, default)
+python admin_drop.py --num-winners 5
+
+# 2. Run a drop with 3 guaranteed top-balance winners, 2 more chosen randomly
+python admin_drop.py --num-winners 5 --num-winners-guaranteed 3 --winner-selection-mode random
+
+# 3. Run a drop with 2 guaranteed top-balance winners, 3 more chosen weighted by balance
+python admin_drop.py --num-winners 5 --num-winners-guaranteed 2 --winner-selection-mode weighted
+
+# 4. Run a drop using a list of wallets from a file (one address per line)
+python admin_drop.py --num-winners 3 --source file --wallets-file [filename].txt
