@@ -8,9 +8,11 @@ import { isTokenConfigured } from '../config/token';
 import type { UserInfo } from '../types/global';
 import Navigation from '../components/Navigation';
 import ProfilePage from './ProfilePage';
+import { useProfile } from '../contexts/ProfileContext';
 
 const AccountPage: React.FC = () => {
   const { publicKey, connected } = useWallet();
+  const { checkProfileCompletion } = useProfile();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shippingInfo, setShippingInfo] = useState<Partial<UserInfo>>({});
@@ -28,6 +30,16 @@ const AccountPage: React.FC = () => {
       checkEligibility();
     }
   }, [publicKey]);
+
+  // Initialize form fields when shipping info is loaded
+  useEffect(() => {
+    if (shippingInfo) {
+      if (shippingInfo.username && !username) setUsername(shippingInfo.username);
+      if (shippingInfo.email && !email) setEmail(shippingInfo.email);
+      if (shippingInfo.email && !confirmEmail) setConfirmEmail(shippingInfo.email);
+      if (shippingInfo.shippingAddress && !shippingAddress) setShippingAddress(shippingInfo.shippingAddress);
+    }
+  }, [shippingInfo, username, email, confirmEmail, shippingAddress]);
 
   const isValidWalletAddress = (address: string): boolean => {
     return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
@@ -74,11 +86,11 @@ const AccountPage: React.FC = () => {
       setError('Please enter a valid wallet address first.');
       return;
     }
-    if (!shippingInfo.username || !shippingInfo.email || !confirmEmail || !shippingInfo.shippingAddress) {
+    if (!username || !email || !confirmEmail || !shippingAddress) {
       setError('Please fill in all fields.');
       return;
     }
-    if (shippingInfo.email !== confirmEmail) {
+    if (email !== confirmEmail) {
       setError('Email and Confirm Email must match.');
       return;
     }
@@ -93,6 +105,8 @@ const AccountPage: React.FC = () => {
         email
       );
       setIsShippingFormVisible(false);
+      // Refresh profile completion status
+      await checkProfileCompletion();
     } catch (err: unknown) {
       setError('Failed to save shipping info.');
     } finally {
@@ -194,7 +208,7 @@ const AccountPage: React.FC = () => {
                           <input
                             type="text"
                             id="username"
-                            value={username}
+                            value={username || shippingInfo.username || ''}
                             onChange={(e) => setUsername(e.target.value)}
                             style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e7eb', fontSize: '1rem' }}
                             placeholder="Enter a username"
@@ -207,7 +221,7 @@ const AccountPage: React.FC = () => {
                             <input
                               type="email"
                               id="email"
-                              value={email}
+                              value={email || shippingInfo.email || ''}
                               onChange={(e) => setEmail(e.target.value)}
                               style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e7eb', fontSize: '1rem' }}
                               placeholder="Enter your email address"
@@ -219,7 +233,7 @@ const AccountPage: React.FC = () => {
                             <input
                               type="email"
                               id="confirmEmail"
-                              value={confirmEmail}
+                              value={confirmEmail || shippingInfo.email || ''}
                               onChange={(e) => setConfirmEmail(e.target.value)}
                               style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e7eb', fontSize: '1rem' }}
                               placeholder="Re-enter your email address"
@@ -232,7 +246,7 @@ const AccountPage: React.FC = () => {
                           <textarea
                             id="shippingAddress"
                             rows={2}
-                            value={shippingAddress}
+                            value={shippingAddress || shippingInfo.shippingAddress || ''}
                             onChange={(e) => setShippingAddress(e.target.value)}
                             required
                             placeholder="Enter your complete shipping address..."
