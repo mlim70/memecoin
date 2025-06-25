@@ -3,22 +3,14 @@
 
 import { doc, setDoc, getDoc, collection, query, getDocs, orderBy, limit, startAfter, where } from "firebase/firestore";
 import { db } from "../firebase";
-import type { UserInfo } from '../types/global';
+import type { UserInfo, ShippingInfo } from '../types/global';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { TOKEN_CONFIG } from '../config/token';
 
 // Save comprehensive shipping information for a wallet
 export const saveShippingInfoForWallet = async (
   walletAddress: string,
-  shippingInfo: {
-    name: string;
-    addressLine1: string;
-    addressLine2?: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-  },
+  shippingInfo: ShippingInfo,
   username?: string,
   email?: string
 ) => {
@@ -26,13 +18,7 @@ export const saveShippingInfoForWallet = async (
     const userRef = doc(db, "users", walletAddress);
     await setDoc(userRef, {
       walletAddress,
-      shippingName: shippingInfo.name,
-      shippingAddressLine1: shippingInfo.addressLine1,
-      shippingAddressLine2: shippingInfo.addressLine2 || '',
-      shippingCity: shippingInfo.city,
-      shippingState: shippingInfo.state,
-      shippingZipCode: shippingInfo.zipCode,
-      shippingCountry: shippingInfo.country,
+      shipping: shippingInfo,
       username: username || '',
       email: email || '',
       updatedAt: new Date().toISOString(),

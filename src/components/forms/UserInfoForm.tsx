@@ -50,13 +50,17 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
       if (initialData.username && !username) setUsername(initialData.username);
       if (initialData.email && !email) setEmail(initialData.email);
       if (initialData.email && !confirmEmail) setConfirmEmail(initialData.email);
-      if (initialData.shippingName && !shippingName) setShippingName(initialData.shippingName);
-      if (initialData.shippingAddressLine1 && !shippingAddressLine1) setShippingAddressLine1(initialData.shippingAddressLine1);
-      if (initialData.shippingAddressLine2 && !shippingAddressLine2) setShippingAddressLine2(initialData.shippingAddressLine2);
-      if (initialData.shippingCity && !shippingCity) setShippingCity(initialData.shippingCity);
-      if (initialData.shippingState && !shippingState) setShippingState(initialData.shippingState);
-      if (initialData.shippingZipCode && !shippingZipCode) setShippingZipCode(initialData.shippingZipCode);
-      if (initialData.shippingCountry && !shippingCountry) setShippingCountry(initialData.shippingCountry);
+      
+      // Handle nested shipping object
+      if (initialData.shipping) {
+        if (initialData.shipping.name && !shippingName) setShippingName(initialData.shipping.name);
+        if (initialData.shipping.addressLine1 && !shippingAddressLine1) setShippingAddressLine1(initialData.shipping.addressLine1);
+        if (initialData.shipping.addressLine2 && !shippingAddressLine2) setShippingAddressLine2(initialData.shipping.addressLine2);
+        if (initialData.shipping.city && !shippingCity) setShippingCity(initialData.shipping.city);
+        if (initialData.shipping.state && !shippingState) setShippingState(initialData.shipping.state);
+        if (initialData.shipping.zipCode && !shippingZipCode) setShippingZipCode(initialData.shipping.zipCode);
+        if (initialData.shipping.country && !shippingCountry) setShippingCountry(initialData.shipping.country);
+      }
     }
   }, [initialData, username, email, confirmEmail, shippingName, shippingAddressLine1, shippingAddressLine2, shippingCity, shippingState, shippingZipCode, shippingCountry]);
 
