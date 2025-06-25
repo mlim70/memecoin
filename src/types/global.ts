@@ -32,7 +32,14 @@ export interface DropResult {
 // User information stored in Firebase
 export interface UserInfo {
   walletAddress: string;
-  shippingAddress: string;
+  // Comprehensive shipping information
+  shippingName: string;
+  shippingAddressLine1: string;
+  shippingAddressLine2?: string;
+  shippingCity: string;
+  shippingState: string;
+  shippingZipCode: string;
+  shippingCountry: string;
   username: string;
   email: string;
   balance: number;

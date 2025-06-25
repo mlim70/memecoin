@@ -7,6 +7,7 @@ import { TOKEN_CONFIG } from '../config/token';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
+import { Link } from 'react-router-dom';
 
 type UserInfo = UserInfoBase & { balance?: number };
 
@@ -113,7 +114,7 @@ export default function LeaderboardPage() {
               {eligibleUsers !== null && (<div>Eligible: {eligibleUsers}</div>)}
             </div>
           )}
-          <h1 className="hero-title" style={{
+          <h1 style={{
             fontSize: '2.6rem',
             fontWeight: 900,
             marginBottom: 16,
@@ -125,9 +126,19 @@ export default function LeaderboardPage() {
             alignItems: 'center',
             gap: 14,
             justifyContent: 'center',
+            background: 'none',
+            WebkitBackgroundClip: 'unset',
+            WebkitTextFillColor: 'unset',
           }}>
-            <span role="img" aria-label="trophy" style={{ fontSize: '2.2rem' }}>🏆</span>
+            <span style={{ 
+              fontSize: '2.2rem', 
+              lineHeight: 1
+            }}>🏆</span>
             Leaderboard
+            <span style={{ 
+              fontSize: '2.2rem', 
+              lineHeight: 1
+            }}>🏆</span>
           </h1>
           <p style={{ color: '#c7d2fe', marginBottom: 16, fontSize: '1.05rem', fontWeight: 500 }}>Top {TOKEN_CONFIG.SYMBOL} holders</p>
           
@@ -142,7 +153,7 @@ export default function LeaderboardPage() {
               <div style={{ padding: '22px 0', textAlign: 'center' }}>Username</div>
               <div style={{ padding: '22px 0', textAlign: 'center' }}>Balance</div>
             </div>
-            <div style={{ overflowY: 'auto', flex: 1, fontSize: '1.18rem', minHeight: 0, maxHeight: 'calc(100vh - 100px)', background: '#f4f4f5' }}>
+            <div style={{ overflowY: 'auto', flex: 1, fontSize: '1.18rem', minHeight: 0, maxHeight: 'calc(100vh - 100px)', background: '#1e293b' }}>
               {users.length === 0 && !loading && (
                 <div style={{ padding: 64, color: '#6b7280', textAlign: 'center', fontSize: '1.2rem' }}>No users found.</div>
               )}
@@ -150,7 +161,29 @@ export default function LeaderboardPage() {
                 <div key={`${user.walletAddress}-${idx}`} style={{ display: 'grid', gridTemplateColumns: '120px 2fr 1fr', alignItems: 'center', borderBottom: '1.5px solid #23272f', background: idx < 3 ? getRowStyle(idx).background : (idx % 2 === 0 ? 'rgba(36,37,46,0.85)' : 'rgba(30,31,38,0.85)'), fontWeight: getRowStyle(idx).fontWeight, color: getRowStyle(idx).color, fontSize: idx < 3 ? '1.35rem' : '1.18rem', boxShadow: idx < 3 ? '0 2px 12px rgba(0,0,0,0.08)' : undefined, padding: '0 0.5rem' }}>
                   <div style={{ textAlign: 'center', fontWeight: 800 }}>{idx + 1}</div>
                   <div style={{ textAlign: 'center', fontWeight: 700 }}>
-                    {user.username ? user.username : user.walletAddress.slice(0, 6) + '...' + user.walletAddress.slice(-4)}
+                    {user.username ? (
+                      <Link 
+                        to={`/profile/${user.username}`}
+                        style={{ 
+                          color: 'inherit', 
+                          textDecoration: 'none',
+                          cursor: 'pointer',
+                          transition: 'color 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = '#6366f1';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = getRowStyle(idx).color;
+                        }}
+                      >
+                        {user.username}
+                      </Link>
+                    ) : (
+                      <span style={{ color: '#6b7280', fontStyle: 'italic' }}>
+                        {user.walletAddress.slice(0, 6) + '...' + user.walletAddress.slice(-4)}
+                      </span>
+                    )}
                   </div>
                   <div style={{ textAlign: 'center', fontVariantNumeric: 'tabular-nums', fontWeight: 800 }}>
                     {user.balance.toLocaleString()} {TOKEN_CONFIG.SYMBOL}

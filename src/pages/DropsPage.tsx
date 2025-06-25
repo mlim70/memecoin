@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Navigation from '../components/Navigation';
+import { Link } from 'react-router-dom';
 
-const NUM_GALLERY_SLOTS = 6;
 const mockDrops = [
   {
     id: 'drop1',
@@ -23,21 +23,20 @@ const mockDrops = [
   },
 ];
 
-const galleryItems = [
+const dropsItems = [
   ...mockDrops,
-  ...Array(NUM_GALLERY_SLOTS - mockDrops.length).fill(null),
 ];
 
-export default function GalleryPage() {
+export default function DropsPage() {
   const [selectedDrop, setSelectedDrop] = useState<null | typeof mockDrops[0]>(null);
 
   return (
     <div className="main-container">
-      <Navigation currentPage="gallery" />
+      <Navigation currentPage="drops" />
       <main className="page-content">
         <div className="content-wrapper">
           <h1 className="hero-title">Drop Gallery</h1>
-          <p style={{ color: '#27272a', marginBottom: 32 }}>View prizes from past drop events. Click 'Winners' to see who won each prize!</p>
+          <p style={{ color: '#cbd5e1', marginBottom: 32 }}>View prizes from past drop events. Click 'Winners' to see who won each prize!</p>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
@@ -48,7 +47,7 @@ export default function GalleryPage() {
             width: '100%',
             maxWidth: 900,
           }}>
-            {galleryItems.map((drop, idx) => drop ? (
+            {dropsItems.map((drop, idx) => drop ? (
               <div key={drop.id} style={{ background: 'linear-gradient(135deg, #23272f 0%, #18181b 100%)', borderRadius: 16, boxShadow: '0 4px 24px rgba(24,24,27,0.18)', padding: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: 340, justifyContent: 'space-between', border: '1.5px solid #333', transition: 'box-shadow 0.2s', color: '#f4f4f5' }}>
                 <img src={drop.image} alt={drop.title} style={{ width: '100%', borderRadius: 12, marginBottom: 18, objectFit: 'cover', height: 200, background: '#23272f', boxShadow: '0 2px 12px rgba(0,0,0,0.18)' }} />
                 <h3 style={{ color: '#f4f4f5', marginBottom: 8, fontWeight: 700, fontSize: '1.18rem', textShadow: '0 2px 8px #18181b' }}>{drop.title}</h3>
@@ -127,13 +126,13 @@ export default function GalleryPage() {
                         <tr key={winner} style={{ borderBottom: '1px solid rgba(99,102,241,0.18)', background: idx % 2 === 0 ? 'rgba(36,37,46,0.5)' : 'rgba(36,37,46,0.3)' }}>
                           <td style={{ padding: '8px 12px', fontWeight: 600, color: '#c7d2fe', textAlign: 'left', verticalAlign: 'middle' }}>{idx + 1}</td>
                           <td style={{ padding: '8px 12px', textAlign: 'left', verticalAlign: 'middle', wordBreak: 'break-all' }}>
-                            <a
-                              href={`/profile/${encodeURIComponent(winner)}`}
+                            <Link
+                              to={`/profile/${encodeURIComponent(winner)}`}
                               style={{ color: '#6366f1', textDecoration: 'underline', fontWeight: 600, fontSize: '0.98rem', cursor: 'pointer', display: 'inline-block', textAlign: 'left', verticalAlign: 'middle' }}
                               onClick={e => { e.stopPropagation(); }}
                             >
                               {winner}
-                            </a>
+                            </Link>
                           </td>
                         </tr>
                       ))}

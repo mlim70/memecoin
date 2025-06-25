@@ -45,7 +45,14 @@ export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) =>
       
       if (info) {
         // Check if profile is complete (has all required fields)
-        const hasCompleteProfile = info.username && info.email && info.shippingAddress;
+        const hasCompleteProfile = info.username && 
+          info.email && 
+          info.shippingName && 
+          info.shippingAddressLine1 && 
+          info.shippingCity && 
+          info.shippingState && 
+          info.shippingZipCode && 
+          info.shippingCountry;
         setIsProfileComplete(!!hasCompleteProfile);
         
         // If profile is not complete, show mandatory form

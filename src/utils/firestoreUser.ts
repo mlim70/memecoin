@@ -1,16 +1,24 @@
 // src/utils/firestoreUser.ts
 // Firestore utilities for storing user/wallet data
 
-import { doc, setDoc, getDoc, collection, query, getDocs, orderBy, limit, startAfter } from "firebase/firestore";
+import { doc, setDoc, getDoc, collection, query, getDocs, orderBy, limit, startAfter, where } from "firebase/firestore";
 import { db } from "../firebase";
 import type { UserInfo } from '../types/global';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { TOKEN_CONFIG } from '../config/token';
 
-// Save shipping information for a wallet (with username, email, and shippingAddress)
+// Save comprehensive shipping information for a wallet
 export const saveShippingInfoForWallet = async (
   walletAddress: string,
-  shippingAddress: string,
+  shippingInfo: {
+    name: string;
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  },
   username?: string,
   email?: string
 ) => {
@@ -18,7 +26,13 @@ export const saveShippingInfoForWallet = async (
     const userRef = doc(db, "users", walletAddress);
     await setDoc(userRef, {
       walletAddress,
-      shippingAddress,
+      shippingName: shippingInfo.name,
+      shippingAddressLine1: shippingInfo.addressLine1,
+      shippingAddressLine2: shippingInfo.addressLine2 || '',
+      shippingCity: shippingInfo.city,
+      shippingState: shippingInfo.state,
+      shippingZipCode: shippingInfo.zipCode,
+      shippingCountry: shippingInfo.country,
       username: username || '',
       email: email || '',
       updatedAt: new Date().toISOString(),
@@ -187,5 +201,23 @@ export const updateUserBalance = async (walletAddress: string) => {
     await setDoc(doc(db, 'users', walletAddress), { balance, updatedAt: new Date().toISOString() }, { merge: true });
   } catch (e) {
     console.error(`Error updating balance for ${walletAddress}:`, e);
+  }
+};
+
+// Get user info by username
+export const getUserInfoByUsername = async (username: string) => {
+  try {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("username", "==", username));
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0];
+      return doc.data();
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting user info by username:", error);
+    return null;
   }
 }; 

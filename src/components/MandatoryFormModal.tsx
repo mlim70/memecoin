@@ -1,40 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { saveShippingInfoForWallet } from '../utils/firestoreUser';
 import { useProfile } from '../contexts/ProfileContext';
+import UserInfoForm from './forms/UserInfoForm';
 
 const MandatoryFormModal: React.FC = () => {
   const { publicKey } = useWallet();
   const { showMandatoryForm, setShowMandatoryForm, profileData, checkProfileCompletion } = useProfile();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [confirmEmail, setConfirmEmail] = useState('');
-  const [shippingAddress, setShippingAddress] = useState('');
 
-  // Initialize form fields when profile data is loaded
-  useEffect(() => {
-    if (profileData) {
-      if (profileData.username && !username) setUsername(profileData.username);
-      if (profileData.email && !email) setEmail(profileData.email);
-      if (profileData.email && !confirmEmail) setConfirmEmail(profileData.email);
-      if (profileData.shippingAddress && !shippingAddress) setShippingAddress(profileData.shippingAddress);
-    }
-  }, [profileData, username, email, confirmEmail, shippingAddress]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (formData: {
+    username: string;
+    email: string;
+    confirmEmail: string;
+    shippingName: string;
+    shippingAddressLine1: string;
+    shippingAddressLine2: string;
+    shippingCity: string;
+    shippingState: string;
+    shippingZipCode: string;
+    shippingCountry: string;
+  }) => {
     if (!publicKey) {
       setError('Please connect your wallet first.');
-      return;
-    }
-    if (!username || !email || !confirmEmail || !shippingAddress) {
-      setError('Please fill in all fields.');
-      return;
-    }
-    if (email !== confirmEmail) {
-      setError('Email and Confirm Email must match.');
       return;
     }
     
@@ -44,9 +33,17 @@ const MandatoryFormModal: React.FC = () => {
     try {
       await saveShippingInfoForWallet(
         publicKey.toBase58(),
-        shippingAddress,
-        username,
-        email
+        {
+          name: formData.shippingName,
+          addressLine1: formData.shippingAddressLine1,
+          addressLine2: formData.shippingAddressLine2,
+          city: formData.shippingCity,
+          state: formData.shippingState,
+          zipCode: formData.shippingZipCode,
+          country: formData.shippingCountry,
+        },
+        formData.username,
+        formData.email
       );
       setShowMandatoryForm(false);
       // Refresh profile completion status
@@ -93,75 +90,16 @@ const MandatoryFormModal: React.FC = () => {
           </p>
         </div>
         
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label htmlFor="modal-username" style={{ fontWeight: 500, color: '#27272a' }}>Username *</label>
-            <input
-              type="text"
-              id="modal-username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '1rem' }}
-              placeholder="Enter a username"
-              required
-            />
-          </div>
-          
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <label htmlFor="modal-email" style={{ fontWeight: 500, color: '#27272a' }}>Email *</label>
-              <input
-                type="email"
-                id="modal-email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '1rem' }}
-                placeholder="Enter your email address"
-                required
-              />
-            </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <label htmlFor="modal-confirmEmail" style={{ fontWeight: 500, color: '#27272a' }}>Verify Email *</label>
-              <input
-                type="email"
-                id="modal-confirmEmail"
-                value={confirmEmail}
-                onChange={(e) => setConfirmEmail(e.target.value)}
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '1rem' }}
-                placeholder="Re-enter your email address"
-                required
-              />
-            </div>
-          </div>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label htmlFor="modal-shippingAddress" style={{ fontWeight: 500, color: '#27272a' }}>Shipping Address *</label>
-            <textarea
-              id="modal-shippingAddress"
-              rows={3}
-              value={shippingAddress}
-              onChange={(e) => setShippingAddress(e.target.value)}
-              required
-              placeholder="Enter your complete shipping address..."
-              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '1rem', resize: 'vertical' }}
-            />
-          </div>
-          
-          {error && (
-            <div style={{ color: '#ef4444', fontWeight: 500, textAlign: 'center' }}>{error}</div>
-          )}
-          
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="btn btn-primary"
-              style={{ minWidth: 150, padding: '12px 24px', fontSize: '1rem' }}
-            >
-              {isLoading ? 'Saving...' : 'Complete Profile'}
-            </button>
-          </div>
-        </form>
+        <UserInfoForm
+          initialData={profileData || undefined}
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+          error={error}
+          submitButtonText="Complete Profile"
+          showCancelButton={true}
+          onCancel={() => setShowMandatoryForm(false)}
+          cancelButtonText="Skip for Now"
+        />
       </div>
     </div>
   );
