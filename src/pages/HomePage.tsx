@@ -25,15 +25,42 @@ export default function HomePage() {
           )}
           <div className="nav-buttons">
             <WalletMultiButton className="btn btn-primary" />
-            <a href="/gallery" className="btn btn-secondary">
-              View Gallery
+            <a href="/drops" className="btn btn-secondary">
+              View Drops
             </a>
           </div>
           {/* Info box for minimum token balance and token info, with vertical overflow protection */}
-          <div style={{ width: '100%', maxWidth: 500, margin: '32px auto', padding: 16, background: 'rgba(26,26,26,0.7)', borderRadius: 8, fontSize: '0.95rem', color: '#a1a1aa', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', wordBreak: 'break-word', boxSizing: 'border-box', maxHeight: 180, overflowY: 'auto' }}>
-            <div style={{ marginBottom: 8, fontWeight: 600, color: '#fff' }}>Drop Participation Requirements</div>
-            <div><strong>Token:</strong> {TOKEN_CONFIG.SYMBOL}</div>
-            <div><strong>Minimum Balance:</strong> {TOKEN_CONFIG.MINIMUM_BALANCE_FOR_DROPS.toLocaleString()} {TOKEN_CONFIG.SYMBOL}</div>
+          <div style={{ 
+            width: '100%', 
+            maxWidth: 500, 
+            margin: '32px auto', 
+            padding: 20, 
+            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)', 
+            borderRadius: 12, 
+            fontSize: '0.95rem', 
+            color: '#e2e8f0', 
+            boxShadow: '0 4px 20px rgba(102, 126, 234, 0.15)', 
+            wordBreak: 'break-word', 
+            boxSizing: 'border-box', 
+            maxHeight: 180, 
+            overflowY: 'auto', 
+            border: '1px solid rgba(102, 126, 234, 0.2)',
+            backdropFilter: 'blur(10px)'
+          }}>
+            <div style={{ 
+              marginBottom: 12, 
+              fontWeight: 600, 
+              color: '#ffffff',
+              fontSize: '1.05rem',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}>
+              Drop Participation Requirements
+            </div>
+            <div style={{ marginBottom: 6 }}><strong style={{ color: '#cbd5e1' }}>Token:</strong> <span style={{ color: '#ffffff' }}>{TOKEN_CONFIG.SYMBOL}</span></div>
+            <div><strong style={{ color: '#cbd5e1' }}>Minimum Balance:</strong> <span style={{ color: '#ffffff' }}>{TOKEN_CONFIG.MINIMUM_BALANCE_FOR_DROPS.toLocaleString()} {TOKEN_CONFIG.SYMBOL}</span></div>
           </div>
         </div>
       </main>

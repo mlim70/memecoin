@@ -29,14 +29,25 @@ export interface DropResult {
   timestamp: string;
 }
 
+// Shipping information as a nested object
+export interface ShippingInfo {
+  name: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+}
+
 // User information stored in Firebase
 export interface UserInfo {
   walletAddress: string;
-  shippingAddress: string;
   username: string;
   email: string;
   balance: number;
   updatedAt: string;
+  shipping?: ShippingInfo; // Optional shipping information
 }
 
 // Drop history entry stored in Firebase
