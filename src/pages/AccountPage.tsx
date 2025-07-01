@@ -52,9 +52,9 @@ const AccountPage: React.FC = () => {
             />
             
             {/* Main Card Content */}
-            <div style={{ background: '#fff', borderRadius: '1.25rem', boxShadow: '0 4px 24px rgba(24,24,27,0.08)', padding: '2rem', width: '100%', maxWidth: 700, display: 'flex', flexDirection: 'column', minHeight: 0, maxHeight: 'calc(100vh - 200px)', overflow: 'hidden' }}>
+            <div style={{ background: '#fff', borderRadius: '1.25rem', boxShadow: '0 4px 24px rgba(24,24,27,0.08)', padding: '2rem', width: '100%', maxWidth: 600, display: 'flex', flexDirection: 'column', minHeight: 0, maxHeight: 'calc(100vh - 200px)', overflow: 'hidden' }}>
               {/* Tab Content */}
-              <div style={{ flex: 1, minWidth: 0, overflow: 'auto' }}>
+              <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'auto' }}>
                 {activeTab === 'info' && (
                   <>
                     {/* Header row with Account title and wallet button */}
