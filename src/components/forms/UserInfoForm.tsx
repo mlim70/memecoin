@@ -25,6 +25,7 @@ interface UserInfoFormProps {
   onCancel?: () => void;
   cancelButtonText?: string;
   currentWalletAddress?: string;
+  showSuccess?: boolean;
 }
 
 const UserInfoForm: React.FC<UserInfoFormProps> = ({
@@ -36,7 +37,8 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
   showCancelButton = false,
   onCancel,
   cancelButtonText = 'Cancel',
-  currentWalletAddress
+  currentWalletAddress,
+  showSuccess = false
 }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -56,6 +58,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
   const [zipValid, setZipValid] = useState(true);
   const [countryValid, setCountryValid] = useState(true);
   const [stateValid, setStateValid] = useState(true);
+  const [usernameFocused, setUsernameFocused] = useState(false);
 
   // Initialize form fields when initial data is provided
   useEffect(() => {
@@ -199,6 +202,11 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
       gap: 18, 
       boxShadow: '0 2px 12px rgba(24,24,27,0.06)' 
     }}>
+      {showSuccess && (
+        <div style={{ color: '#10b981', background: '#e6f9f0', border: '1px solid #10b981', borderRadius: 8, padding: '10px 16px', marginBottom: 12, fontWeight: 500, textAlign: 'center' }}>
+          Info saved successfully!
+        </div>
+      )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <label htmlFor="username" style={{ fontWeight: 500, color: '#27272a', marginBottom: 4 }}>Username *</label>
         <input
@@ -206,6 +214,8 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
           id="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          onFocus={() => setUsernameFocused(true)}
+          onBlur={() => setUsernameFocused(false)}
           style={{ 
             width: '100%', 
             padding: 10, 
@@ -217,7 +227,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
           placeholder="Enter a username"
           required
         />
-        {username.trim() && (
+        {usernameFocused && username.trim() && (
           <div style={{ 
             fontSize: '0.875rem', 
             color: usernameValidation.isValid ? '#10b981' : '#ef4444',

@@ -19,6 +19,7 @@ const AccountPage: React.FC = () => {
   } = useAccount();
   
   const [activeTab, setActiveTab] = useState<'info' | 'preview'>('info');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleFormSubmit = async (formData: {
     username: string;
@@ -33,6 +34,8 @@ const AccountPage: React.FC = () => {
     shippingCountry: string;
   }) => {
     await saveUserInfo(formData);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
     // Refresh profile completion status
     await checkProfileCompletion();
   };
@@ -80,6 +83,7 @@ const AccountPage: React.FC = () => {
                         isLoading={isLoading}
                         error={error}
                         currentWalletAddress={publicKey.toBase58()}
+                        showSuccess={showSuccess}
                       />
                     )}
                   </>
