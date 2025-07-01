@@ -202,11 +202,6 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
       gap: 18, 
       boxShadow: '0 2px 12px rgba(24,24,27,0.06)' 
     }}>
-      {showSuccess && (
-        <div style={{ color: '#10b981', background: '#e6f9f0', border: '1px solid #10b981', borderRadius: 8, padding: '10px 16px', marginBottom: 12, fontWeight: 500, textAlign: 'center' }}>
-          Info saved successfully!
-        </div>
-      )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <label htmlFor="username" style={{ fontWeight: 500, color: '#27272a', marginBottom: 4 }}>Username *</label>
         <input
@@ -405,25 +400,20 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
         <div style={{ color: '#ef4444', marginTop: 8, fontWeight: 500 }}>{error}</div>
       )}
       
-      <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 }}>
-        <button
-          type="submit"
-          disabled={isLoading || !usernameValidation.isValid || usernameValidation.isChecking}
-          className="btn btn-primary"
-          style={{ minWidth: 100 }}
-        >
-          {isLoading ? 'Saving...' : submitButtonText}
-        </button>
-        {showCancelButton && onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="btn btn-secondary"
-            style={{ minWidth: 100 }}
-          >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8, justifyContent: 'flex-end' }}>
+        {showSuccess && (
+          <span style={{ color: '#10b981', background: '#e6f9f0', border: '1px solid #10b981', borderRadius: 8, padding: '7px 14px', fontWeight: 500, marginRight: 10, fontSize: '1rem' }}>
+            Info saved successfully!
+          </span>
+        )}
+        {showCancelButton && (
+          <button type="button" className="btn btn-secondary" onClick={onCancel} style={{ minWidth: 100 }}>
             {cancelButtonText}
           </button>
         )}
+        <button type="submit" className="btn btn-primary" disabled={isLoading} style={{ minWidth: 120 }}>
+          {isLoading ? 'Saving...' : submitButtonText}
+        </button>
       </div>
     </form>
   );

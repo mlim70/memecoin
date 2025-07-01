@@ -1,11 +1,14 @@
 // src/pages/AccountPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useProfile } from '../contexts/ProfileContext';
 import Navigation from '../components/Navigation';
 import AccountSidebar from '../components/account/AccountSidebar';
 import UserInfoForm from '../components/forms/UserInfoForm';
 import WalletConnection from '../components/ui/WalletConnection';
 import { useAccount } from '../hooks/useAccount';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { PublicKey } from '@solana/web3.js';
+import { TOKEN_CONFIG, isTokenConfigured, formatTokenBalance } from '../config/token';
 
 const AccountPage: React.FC = () => {
   const { checkProfileCompletion } = useProfile();
@@ -17,9 +20,12 @@ const AccountPage: React.FC = () => {
     connected,
     publicKey
   } = useAccount();
-  
+  const { connection } = useConnection();
+  const { wallet } = useWallet();
   const [activeTab, setActiveTab] = useState<'info' | 'preview'>('info');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [tokenBalance, setTokenBalance] = useState<number | null>(null);
+  const [loadingBalance, setLoadingBalance] = useState(false);
 
   const handleFormSubmit = async (formData: {
     username: string;
@@ -39,6 +45,24 @@ const AccountPage: React.FC = () => {
     // Refresh profile completion status
     await checkProfileCompletion();
   };
+
+  useEffect(() => {
+    const fetchTokenBalance = async () => {
+      if (!publicKey || !isTokenConfigured()) return;
+      setLoadingBalance(true);
+      try {
+        const tokenAccount = await connection.getParsedTokenAccountsByOwner(publicKey, {
+          mint: new PublicKey(TOKEN_CONFIG.MINT_ADDRESS)
+        });
+        const amount = tokenAccount.value[0]?.account.data.parsed.info.tokenAmount.uiAmount || 0;
+        setTokenBalance(amount);
+      } catch (e) {
+        setTokenBalance(0);
+      }
+      setLoadingBalance(false);
+    };
+    if (connected) fetchTokenBalance();
+  }, [publicKey, connected, connection]);
 
   return (
     <div className="main-container" style={{ height: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column', paddingTop: 0 }}>
@@ -67,6 +91,15 @@ const AccountPage: React.FC = () => {
                         <WalletConnection />
                       )}
                     </div>
+                    {/* Token balance display */}
+                    {connected && publicKey && (
+                      <div style={{ marginBottom: 18, fontWeight: 600, color: '#6366f1', fontSize: '1.1rem', letterSpacing: '0.01em' }}>
+                        {loadingBalance ? 'Loading balance...' :
+                          !isTokenConfigured() ? 'Set token address' :
+                          <span>Balance: {formatTokenBalance(tokenBalance)} {TOKEN_CONFIG.SYMBOL}</span>
+                        }
+                      </div>
+                    )}
                     
                     {/* Only show connect wallet section if not connected */}
                     {!connected && (
