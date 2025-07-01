@@ -166,7 +166,25 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
     setShippingCity(parts.city);
     setShippingState(parts.state);
     setShippingZipCode(parts.zipCode);
-    setShippingCountry(parts.country);
+    // Robust country mapping: try code, then name (case-insensitive, partial match)
+    let countryCode = '';
+    // Try exact code match
+    if (countries.some(c => c.code === parts.country)) {
+      countryCode = parts.country;
+    } else {
+      // Try exact name match (case-insensitive)
+      const byName = countries.find(c => c.name.toLowerCase() === parts.country.toLowerCase());
+      if (byName) {
+        countryCode = byName.code;
+      } else {
+        // Try partial name match (case-insensitive)
+        const byPartial = countries.find(c => parts.country.toLowerCase().includes(c.name.toLowerCase()) || c.name.toLowerCase().includes(parts.country.toLowerCase()));
+        if (byPartial) {
+          countryCode = byPartial.code;
+        }
+      }
+    }
+    setShippingCountry(countryCode || '');
   };
 
   return (
