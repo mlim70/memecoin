@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { UserInfo } from '../../types/global';
+import { isUsernameAvailable } from '../../utils/firestoreUser';
 
 interface UserInfoFormProps {
   initialData?: Partial<UserInfo>;
@@ -21,6 +22,7 @@ interface UserInfoFormProps {
   showCancelButton?: boolean;
   onCancel?: () => void;
   cancelButtonText?: string;
+  currentWalletAddress?: string;
 }
 
 const UserInfoForm: React.FC<UserInfoFormProps> = ({
@@ -31,7 +33,8 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
   submitButtonText = 'Save',
   showCancelButton = false,
   onCancel,
-  cancelButtonText = 'Cancel'
+  cancelButtonText = 'Cancel',
+  currentWalletAddress
 }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -43,6 +46,11 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
   const [shippingState, setShippingState] = useState('');
   const [shippingZipCode, setShippingZipCode] = useState('');
   const [shippingCountry, setShippingCountry] = useState('');
+  const [usernameValidation, setUsernameValidation] = useState<{
+    isValid: boolean;
+    isChecking: boolean;
+    message: string;
+  }>({ isValid: true, isChecking: false, message: '' });
 
   // Initialize form fields when initial data is provided
   useEffect(() => {
@@ -64,8 +72,68 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
     }
   }, [initialData, username, email, confirmEmail, shippingName, shippingAddressLine1, shippingAddressLine2, shippingCity, shippingState, shippingZipCode, shippingCountry]);
 
+  // Username validation with debouncing
+  useEffect(() => {
+    const validateUsername = async () => {
+      if (!username.trim()) {
+        setUsernameValidation({ isValid: true, isChecking: false, message: '' });
+        return;
+      }
+
+      // Basic validation
+      if (username.length < 2) {
+        setUsernameValidation({ 
+          isValid: false, 
+          isChecking: false, 
+          message: 'Username must be at least 2 characters long' 
+        });
+        return;
+      }
+
+      if (username.length > 20) {
+        setUsernameValidation({ 
+          isValid: false, 
+          isChecking: false, 
+          message: 'Username must be 20 characters or less' 
+        });
+        return;
+      }
+
+      if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+        setUsernameValidation({ 
+          isValid: false, 
+          isChecking: false, 
+          message: 'Username can only contain letters, numbers, underscores, and hyphens' 
+        });
+        return;
+      }
+
+      setUsernameValidation({ isValid: true, isChecking: true, message: 'Checking availability...' });
+
+      try {
+        const isAvailable = await isUsernameAvailable(username, currentWalletAddress);
+        if (isAvailable) {
+          setUsernameValidation({ isValid: true, isChecking: false, message: 'Username is available' });
+        } else {
+          setUsernameValidation({ isValid: false, isChecking: false, message: 'Username is already taken' });
+        }
+      } catch (error) {
+        setUsernameValidation({ isValid: false, isChecking: false, message: 'Error checking username availability' });
+      }
+    };
+
+    const timeoutId = setTimeout(validateUsername, 500); // Debounce for 500ms
+    return () => clearTimeout(timeoutId);
+  }, [username, currentWalletAddress]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent submission if username is invalid or being checked
+    if (!usernameValidation.isValid || usernameValidation.isChecking) {
+      return;
+    }
+    
     onSubmit({
       username,
       email,
@@ -99,10 +167,38 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
           id="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e7eb', fontSize: '1rem' }}
+          style={{ 
+            width: '100%', 
+            padding: 10, 
+            borderRadius: 8, 
+            border: usernameValidation.isValid && username.trim() ? '1px solid #10b981' : usernameValidation.isValid ? '1px solid #e5e7eb' : '1px solid #ef4444', 
+            fontSize: '1rem',
+            backgroundColor: usernameValidation.isChecking ? '#f9fafb' : 'white'
+          }}
           placeholder="Enter a username"
           required
         />
+        {username.trim() && (
+          <div style={{ 
+            fontSize: '0.875rem', 
+            color: usernameValidation.isValid ? '#10b981' : '#ef4444',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4
+          }}>
+            {usernameValidation.isChecking && (
+              <div style={{ 
+                width: 12, 
+                height: 12, 
+                border: '2px solid #e5e7eb', 
+                borderTop: '2px solid #3b82f6', 
+                borderRadius: '50%', 
+                animation: 'spin 1s linear infinite' 
+              }} />
+            )}
+            {usernameValidation.message}
+          </div>
+        )}
       </div>
       
       <div style={{ display: 'flex', gap: 18 }}>
@@ -232,7 +328,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({
       <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 }}>
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || !usernameValidation.isValid || usernameValidation.isChecking}
           className="btn btn-primary"
           style={{ minWidth: 100 }}
         >

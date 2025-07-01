@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { saveShippingInfoForWallet } from '../utils/firestoreUser';
+import { saveShippingInfoForWallet, isUsernameAvailable } from '../utils/firestoreUser';
 import { useProfile } from '../contexts/ProfileContext';
 import UserInfoForm from './forms/UserInfoForm';
 
@@ -24,6 +24,13 @@ const MandatoryFormModal: React.FC = () => {
   }) => {
     if (!publicKey) {
       setError('Please connect your wallet first.');
+      return;
+    }
+    
+    // Validate username uniqueness
+    const isAvailable = await isUsernameAvailable(formData.username, publicKey.toBase58());
+    if (!isAvailable) {
+      setError('Username is already taken. Please choose a different username.');
       return;
     }
     
@@ -99,6 +106,7 @@ const MandatoryFormModal: React.FC = () => {
           showCancelButton={true}
           onCancel={() => setShowMandatoryForm(false)}
           cancelButtonText="Skip for Now"
+          currentWalletAddress={publicKey?.toBase58()}
         />
       </div>
     </div>

@@ -43,7 +43,7 @@ const AccountPage: React.FC = () => {
       <main className="page-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', maxHeight: 'calc(100vh - 120px)'}}>
         <div className="max-w-2xl mx-auto" style={{ width: '100%', maxWidth: 1100, padding: '24px 0 48px 0', height: '100%', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}> 
           {/* Tabs and Card side by side, content always centered, no overlay, no absolute */}
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', gap: 40, maxWidth: 1000, margin: '0 auto', transform: 'translateX(-100px) translateY(80px)'}}>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', gap: 40, maxWidth: 1000, margin: '0 auto', transform: 'translateX(-100px) translateY(100px)'}}>
             {/* Sidebar */}
             <AccountSidebar
               activeTab={activeTab}
@@ -79,6 +79,7 @@ const AccountPage: React.FC = () => {
                         onSubmit={handleFormSubmit}
                         isLoading={isLoading}
                         error={error}
+                        currentWalletAddress={publicKey.toBase58()}
                       />
                     )}
                   </>

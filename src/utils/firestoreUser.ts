@@ -206,4 +206,28 @@ export const getUserInfoByUsername = async (username: string) => {
     console.error("Error getting user info by username:", error);
     return null;
   }
+};
+
+// Check if username is available (not taken by another user)
+export const isUsernameAvailable = async (username: string, currentWalletAddress?: string): Promise<boolean> => {
+  try {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("username", "==", username));
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      return true; // Username is available
+    }
+    
+    // If we have a current wallet address, check if the username belongs to the same user
+    if (currentWalletAddress) {
+      const existingUser = querySnapshot.docs[0].data();
+      return existingUser.walletAddress === currentWalletAddress;
+    }
+    
+    return false; // Username is taken by another user
+  } catch (error) {
+    console.error("Error checking username availability:", error);
+    return false; // Assume not available on error
+  }
 }; 
