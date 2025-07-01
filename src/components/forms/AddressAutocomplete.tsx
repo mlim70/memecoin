@@ -41,8 +41,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     if (autocompleteRef.current) return;
 
     autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current!, {
-      types: ['address'],
-      componentRestrictions: {},
+      types: ['address']
     });
 
     autocompleteRef.current.addListener('place_changed', () => {
