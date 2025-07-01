@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { checkDropEligibility } from '../utils/dropUtils';
-import { saveShippingInfoForWallet, getShippingInfoForWallet, updateUserBalance } from '../utils/firestoreUser';
+import { saveShippingInfoForWallet, getShippingInfoForWallet, updateUserBalance, isUsernameAvailable } from '../utils/firestoreUser';
 import { isTokenConfigured } from '../config/token';
 import type { UserInfo } from '../types/global';
 
@@ -74,6 +74,13 @@ export const useAccount = () => {
     
     if (formData.email !== formData.confirmEmail) {
       setError('Email and Confirm Email must match.');
+      return;
+    }
+    
+    // Validate username uniqueness
+    const isAvailable = await isUsernameAvailable(formData.username, publicKey.toBase58());
+    if (!isAvailable) {
+      setError('Username is already taken. Please choose a different username.');
       return;
     }
     

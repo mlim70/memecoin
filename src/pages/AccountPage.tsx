@@ -43,7 +43,7 @@ const AccountPage: React.FC = () => {
       <main className="page-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', maxHeight: 'calc(100vh - 120px)'}}>
         <div className="max-w-2xl mx-auto" style={{ width: '100%', maxWidth: 1100, padding: '24px 0 48px 0', height: '100%', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}> 
           {/* Tabs and Card side by side, content always centered, no overlay, no absolute */}
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', gap: 40, maxWidth: 1000, margin: '0 auto', transform: 'translateX(-100px) translateY(80px)'}}>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', gap: 40, maxWidth: 1000, margin: '0 auto', transform: 'translateX(-100px) translateY(100px)'}}>
             {/* Sidebar */}
             <AccountSidebar
               activeTab={activeTab}
@@ -52,13 +52,13 @@ const AccountPage: React.FC = () => {
             />
             
             {/* Main Card Content */}
-            <div style={{ background: '#fff', borderRadius: '1.25rem', boxShadow: '0 4px 24px rgba(24,24,27,0.08)', padding: '2rem', width: '100%', maxWidth: 700, display: 'flex', flexDirection: 'column', minHeight: 0, maxHeight: 'calc(100vh - 200px)', overflow: 'hidden' }}>
+            <div style={{ background: '#fff', borderRadius: '1.25rem', boxShadow: '0 4px 24px rgba(24,24,27,0.08)', padding: '2rem', width: '100%', maxWidth: 600, display: 'flex', flexDirection: 'column', minHeight: 0, maxHeight: 'calc(100vh - 200px)', overflow: 'hidden' }}>
               {/* Tab Content */}
-              <div style={{ flex: 1, minWidth: 0, overflow: 'auto' }}>
+              <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'auto' }}>
                 {activeTab === 'info' && (
                   <>
                     {/* Header row with Account title and wallet button */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, paddingTop: '2px' }}>
                       <h1 style={{ fontSize: '2rem', fontWeight: 700, color: '#18181b', margin: 0 }}>Account</h1>
                       {connected && publicKey && (
                         <WalletConnection />
@@ -79,6 +79,7 @@ const AccountPage: React.FC = () => {
                         onSubmit={handleFormSubmit}
                         isLoading={isLoading}
                         error={error}
+                        currentWalletAddress={publicKey.toBase58()}
                       />
                     )}
                   </>
