@@ -11,6 +11,25 @@ import { Link } from 'react-router-dom';
 
 type UserInfo = UserInfoBase & { balance?: number };
 
+// Calculate standard competition ranking (1, 2, 2, 4, 5, 5, 7...)
+const calculateRanks = (users: UserInfo[]): number[] => {
+  if (users.length === 0) return [];
+  
+  const ranks = new Array(users.length);
+  let currentRank = 1;
+  let currentBalance = users[0].balance;
+  
+  for (let i = 0; i < users.length; i++) {
+    if (users[i].balance !== currentBalance) {
+      currentRank = i + 1;
+      currentBalance = users[i].balance;
+    }
+    ranks[i] = currentRank;
+  }
+  
+  return ranks;
+};
+
 export default function LeaderboardPage() {
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [nextCursor, setNextCursor] = useState<any>(null);
@@ -21,6 +40,9 @@ export default function LeaderboardPage() {
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const initialLoadDoneRef = useRef(false);
   const { publicKey, connected } = useWallet();
+
+  // Calculate ranks for the current users
+  const userRanks = calculateRanks(users);
 
   const loadLeaderboard = useCallback(async (initial = false) => {
     if (loading) {
@@ -93,13 +115,14 @@ export default function LeaderboardPage() {
 
   // Find current user's rank in the loaded users
   const userWallet = publicKey?.toBase58();
-  const userRank = userWallet ? users.findIndex(u => u.walletAddress === userWallet) : -1;
+  const userRankIndex = userWallet ? users.findIndex(u => u.walletAddress === userWallet) : -1;
+  const userRank = userRankIndex >= 0 ? userRanks[userRankIndex] : -1;
 
-  // Stylized row for top 3
-  const getRowStyle = (idx: number) => {
-    if (idx === 0) return { background: 'linear-gradient(90deg, #fef9c3 0%, #fde68a 100%)', fontWeight: 700, color: '#b45309' };
-    if (idx === 1) return { background: 'linear-gradient(90deg, #e0e7ef 0%, #c7d2fe 100%)', fontWeight: 700, color: '#6366f1' };
-    if (idx === 2) return { background: 'linear-gradient(90deg, #f3e8ff 0%, #d8b4fe 100%)', fontWeight: 700, color: '#a21caf' };
+  // Stylized row for top 3 ranks
+  const getRowStyle = (rank: number) => {
+    if (rank === 1) return { background: 'linear-gradient(90deg, #fef9c3 0%, #fde68a 100%)', fontWeight: 700, color: '#b45309' };
+    if (rank === 2) return { background: 'linear-gradient(90deg, #e0e7ef 0%, #c7d2fe 100%)', fontWeight: 700, color: '#6366f1' };
+    if (rank === 3) return { background: 'linear-gradient(90deg, #f3e8ff 0%, #d8b4fe 100%)', fontWeight: 700, color: '#a21caf' };
     return { fontWeight: 500, color: '#f4f4f5' };
   };
 
@@ -142,9 +165,9 @@ export default function LeaderboardPage() {
           </h1>
           <p style={{ color: '#c7d2fe', marginBottom: 16, fontSize: '1.05rem', fontWeight: 500 }}>Top {TOKEN_CONFIG.SYMBOL} holders</p>
           
-          {connected && userWallet && userRank >= 0 && (
+          {connected && userWallet && userRank > 0 && (
             <div style={{ marginBottom: 16, fontWeight: 600, color: '#6366f1', fontSize: '1.15rem' }}>
-              Your rank: #{userRank + 1}
+              Your rank: #{userRank}
             </div>
           )}
           <div style={{ background: 'rgba(36,37,46,0.95)', borderRadius: 28, boxShadow: '0 4px 24px rgba(24,24,27,0.18)', overflow: 'hidden', width: '100%', minHeight: 0, display: 'flex', flexDirection: 'column', border: '2px solid #333', maxHeight: 'calc(100vh - 240px)' }}>
@@ -157,39 +180,43 @@ export default function LeaderboardPage() {
               {users.length === 0 && !loading && (
                 <div style={{ padding: 64, color: '#6b7280', textAlign: 'center', fontSize: '1.2rem' }}>No users found.</div>
               )}
-              {users.map((user, idx) => (
-                <div key={`${user.walletAddress}-${idx}`} style={{ display: 'grid', gridTemplateColumns: '120px 2fr 1fr', alignItems: 'center', borderBottom: '1.5px solid #23272f', background: idx < 3 ? getRowStyle(idx).background : (idx % 2 === 0 ? 'rgba(36,37,46,0.85)' : 'rgba(30,31,38,0.85)'), fontWeight: getRowStyle(idx).fontWeight, color: getRowStyle(idx).color, fontSize: idx < 3 ? '1.35rem' : '1.18rem', boxShadow: idx < 3 ? '0 2px 12px rgba(0,0,0,0.08)' : undefined, padding: '0 0.5rem' }}>
-                  <div style={{ textAlign: 'center', fontWeight: 800 }}>{idx + 1}</div>
-                  <div style={{ textAlign: 'center', fontWeight: 700 }}>
-                    {user.username ? (
-                      <Link 
-                        to={`/profile/${user.username}`}
-                        style={{ 
-                          color: 'inherit', 
-                          textDecoration: 'none',
-                          cursor: 'pointer',
-                          transition: 'color 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.color = '#6366f1';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.color = getRowStyle(idx).color;
-                        }}
-                      >
-                        {user.username}
-                      </Link>
-                    ) : (
-                      <span style={{ color: '#6b7280', fontStyle: 'italic' }}>
-                        {user.walletAddress.slice(0, 6) + '...' + user.walletAddress.slice(-4)}
-                      </span>
-                    )}
+              {users.map((user, idx) => {
+                const rank = userRanks[idx];
+                const isTopRank = rank <= 3;
+                return (
+                  <div key={`${user.walletAddress}-${idx}`} style={{ display: 'grid', gridTemplateColumns: '120px 2fr 1fr', alignItems: 'center', borderBottom: '1.5px solid #23272f', background: isTopRank ? getRowStyle(rank).background : (idx % 2 === 0 ? 'rgba(36,37,46,0.85)' : 'rgba(30,31,38,0.85)'), fontWeight: getRowStyle(rank).fontWeight, color: getRowStyle(rank).color, fontSize: isTopRank ? '1.35rem' : '1.18rem', boxShadow: isTopRank ? '0 2px 12px rgba(0,0,0,0.08)' : undefined, padding: '0 0.5rem' }}>
+                    <div style={{ textAlign: 'center', fontWeight: 800 }}>{rank}</div>
+                    <div style={{ textAlign: 'center', fontWeight: 700 }}>
+                      {user.username ? (
+                        <Link 
+                          to={`/profile/${user.username}`}
+                          style={{ 
+                            color: 'inherit', 
+                            textDecoration: 'none',
+                            cursor: 'pointer',
+                            transition: 'color 0.2s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.color = '#6366f1';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.color = getRowStyle(rank).color;
+                          }}
+                        >
+                          {user.username}
+                        </Link>
+                      ) : (
+                        <span style={{ color: '#6b7280', fontStyle: 'italic' }}>
+                          {user.walletAddress.slice(0, 6) + '...' + user.walletAddress.slice(-4)}
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ textAlign: 'center', fontVariantNumeric: 'tabular-nums', fontWeight: 800 }}>
+                      {user.balance.toLocaleString()} {TOKEN_CONFIG.SYMBOL}
+                    </div>
                   </div>
-                  <div style={{ textAlign: 'center', fontVariantNumeric: 'tabular-nums', fontWeight: 800 }}>
-                    {user.balance.toLocaleString()} {TOKEN_CONFIG.SYMBOL}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
               {loading && (
                 <div style={{ padding: 48, color: '#6b7280', textAlign: 'center', fontSize: '1.15rem' }}>Loading...</div>
               )}
