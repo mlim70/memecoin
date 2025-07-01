@@ -58,7 +58,7 @@ const AccountPage: React.FC = () => {
                 {activeTab === 'info' && (
                   <>
                     {/* Header row with Account title and wallet button */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, paddingTop: '2px' }}>
                       <h1 style={{ fontSize: '2rem', fontWeight: 700, color: '#18181b', margin: 0 }}>Account</h1>
                       {connected && publicKey && (
                         <WalletConnection />
