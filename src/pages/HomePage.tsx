@@ -1,11 +1,10 @@
 // src/pages/HomePage.tsx
 import Navigation from '../components/Navigation';
-import { useWallet } from '@solana/wallet-adapter-react';
 import merchLogo from '../assets/merch-icon.png';
 import { useWalletWithLoading } from '../hooks/useWallet';
 
 export default function HomePage() {
-  const { isInitializing, isConnected, isDisconnected } = useWalletWithLoading();
+  const { isInitializing, isDisconnected } = useWalletWithLoading();
 
   return (    <div className="main-container" style={{ display: 'flex', flexDirection: 'column' }}>
       <Navigation currentPage="home" />

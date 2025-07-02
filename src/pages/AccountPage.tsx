@@ -22,7 +22,7 @@ const AccountPage: React.FC = () => {
     publicKey
   } = useAccount();
   const { connection } = useConnection();
-  const { isInitializing, isConnected, isDisconnected } = useWalletWithLoading();
+  const { isInitializing, isConnected } = useWalletWithLoading();
   const [activeTab, setActiveTab] = useState<'info' | 'preview'>('info');
   const [showSuccess, setShowSuccess] = useState(false);
   const [tokenBalance, setTokenBalance] = useState<number | null>(null);

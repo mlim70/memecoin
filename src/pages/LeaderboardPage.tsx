@@ -8,7 +8,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Link } from 'react-router-dom';
-import { FaUsers, FaCheckCircle, FaCrown, FaTrophy } from 'react-icons/fa';
+import { FaUsers, FaCheckCircle, FaCrown } from 'react-icons/fa';
 
 type UserInfo = UserInfoBase & { balance?: number };
 
