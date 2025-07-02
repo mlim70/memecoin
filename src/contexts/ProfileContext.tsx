@@ -28,8 +28,8 @@ interface ProfileProviderProps {
 }
 
 export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
-  const { publicKey, connected } = useWallet();
-  const { isInitializing, isConnected, isDisconnected } = useWalletWithLoading();
+  const { publicKey } = useWallet();
+  const { isInitializing, isConnected } = useWalletWithLoading();
   const [isProfileComplete, setIsProfileComplete] = useState(false);
   const [showMandatoryForm, setShowMandatoryForm] = useState(false);
   const [profileData, setProfileData] = useState<Partial<UserInfo> | null>(null);
