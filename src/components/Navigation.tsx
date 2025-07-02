@@ -12,7 +12,7 @@ interface NavigationProps {
 
 export default function Navigation({ currentPage }: NavigationProps) {
   const { disconnect, select, connect, wallets } = useWallet();
-  const { isInitializing, isConnected, isDisconnected } = useWalletWithLoading();
+  const { isInitializing, isConnected } = useWalletWithLoading();
 
   const handleWalletClick = async () => {
     if (isConnected) {

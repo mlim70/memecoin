@@ -16,8 +16,8 @@ const WalletConnection: React.FC<WalletConnectionProps> = ({
   title = 'Connect Your Wallet',
   className = ''
 }) => {
-  const { connected, publicKey } = useWallet();
-  const { isInitializing, isConnected, isDisconnected } = useWalletWithLoading();
+  const { publicKey } = useWallet();
+  const { isInitializing, isConnected } = useWalletWithLoading();
 
   if (isInitializing) {
     return (
