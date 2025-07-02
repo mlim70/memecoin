@@ -1,12 +1,10 @@
 // src/pages/HomePage.tsx
 import Navigation from '../components/Navigation';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { useWallet } from '@solana/wallet-adapter-react';
 import merchLogo from '../assets/merch-icon.png';
-import { TOKEN_CONFIG } from '../config/token';
+import { useWalletWithLoading } from '../hooks/useWallet';
 
 export default function HomePage() {
-  const { connected } = useWallet();
+  const { isInitializing, isDisconnected } = useWalletWithLoading();
 
   return (    <div className="main-container" style={{ display: 'flex', flexDirection: 'column' }}>
       <Navigation currentPage="home" />
@@ -88,17 +86,18 @@ export default function HomePage() {
               <em>Details and requirements for each drop are coming soon. Stay tuned!</em>
             </div>
           </div>
-          {/* Wallet connection and navigation */}
-          { !connected && (
-            <div className="connect-wallet-info">
-              Connect Wallet to participate
-            </div>
-          )}
+          {/* Navigation buttons */}
           <div className="nav-buttons" style={{ justifyContent: 'center', marginTop: 56 }}>
             <a href="/drops" className="neon-btn" style={{ margin: '0 auto' }}>
               View Drops
             </a>
           </div>
+          {/* Wallet connection info - shown below the button */}
+          { !isInitializing && isDisconnected && (
+            <div className="connect-wallet-info" style={{ marginTop: '1rem' }}>
+              Connect Wallet to participate
+            </div>
+          )}
         </div>
       </main>
     </div>

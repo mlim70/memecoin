@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getShippingInfoForWallet } from '../utils/firestoreUser';
 import type { UserInfo } from '../types/global';
+import { useWalletWithLoading } from '../hooks/useWallet';
 
 interface ProfileContextType {
   isProfileComplete: boolean;
@@ -28,12 +29,13 @@ interface ProfileProviderProps {
 
 export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
   const { publicKey, connected } = useWallet();
+  const { isInitializing, isConnected, isDisconnected } = useWalletWithLoading();
   const [isProfileComplete, setIsProfileComplete] = useState(false);
   const [showMandatoryForm, setShowMandatoryForm] = useState(false);
   const [profileData, setProfileData] = useState<Partial<UserInfo> | null>(null);
 
   const checkProfileCompletion = async () => {
-    if (!publicKey || !connected) {
+    if (!publicKey || !isConnected) {
       setIsProfileComplete(false);
       setShowMandatoryForm(false);
       return;
@@ -76,8 +78,10 @@ export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) =>
   };
 
   useEffect(() => {
-    checkProfileCompletion();
-  }, [publicKey, connected]);
+    if (!isInitializing) {
+      checkProfileCompletion();
+    }
+  }, [publicKey, isConnected, isInitializing]);
 
   const value: ProfileContextType = {
     isProfileComplete,

@@ -3,10 +3,12 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { saveShippingInfoForWallet, isUsernameAvailable } from '../utils/firestoreUser';
 import { useProfile } from '../contexts/ProfileContext';
 import UserInfoForm from './forms/UserInfoForm';
+import { useWalletWithLoading } from '../hooks/useWallet';
 
 const MandatoryFormModal: React.FC = () => {
   const { publicKey } = useWallet();
   const { showMandatoryForm, setShowMandatoryForm, profileData, checkProfileCompletion } = useProfile();
+  const { isInitializing } = useWalletWithLoading();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,7 +64,7 @@ const MandatoryFormModal: React.FC = () => {
     }
   };
 
-  if (!showMandatoryForm) return null;
+  if (!showMandatoryForm || isInitializing) return null;
 
   return (
     <div style={{

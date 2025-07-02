@@ -6,9 +6,10 @@ import AccountSidebar from '../components/account/AccountSidebar';
 import UserInfoForm from '../components/forms/UserInfoForm';
 import WalletConnection from '../components/ui/WalletConnection';
 import { useAccount } from '../hooks/useAccount';
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { TOKEN_CONFIG, isTokenConfigured, formatTokenBalance } from '../config/token';
+import { useWalletWithLoading } from '../hooks/useWallet';
 
 const AccountPage: React.FC = () => {
   const { checkProfileCompletion } = useProfile();
@@ -21,7 +22,7 @@ const AccountPage: React.FC = () => {
     publicKey
   } = useAccount();
   const { connection } = useConnection();
-  const { wallet } = useWallet();
+  const { isInitializing, isConnected } = useWalletWithLoading();
   const [activeTab, setActiveTab] = useState<'info' | 'preview'>('info');
   const [showSuccess, setShowSuccess] = useState(false);
   const [tokenBalance, setTokenBalance] = useState<number | null>(null);
@@ -84,15 +85,12 @@ const AccountPage: React.FC = () => {
               <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'auto' }}>
                 {activeTab === 'info' && (
                   <>
-                    {/* Header row with Account title and wallet button */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, paddingTop: '2px' }}>
+                    {/* Header row with Account title */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginBottom: 28, paddingTop: '2px' }}>
                       <h1 style={{ fontSize: '2rem', fontWeight: 700, color: '#18181b', margin: 0 }}>Account</h1>
-                      {connected && publicKey && (
-                        <WalletConnection />
-                      )}
                     </div>
                     {/* Token balance display */}
-                    {connected && publicKey && (
+                    {!isInitializing && isConnected && publicKey && (
                       <div style={{ marginBottom: 18, fontWeight: 600, color: '#6366f1', fontSize: '1.1rem', letterSpacing: '0.01em' }}>
                         {loadingBalance ? 'Loading balance...' :
                           !isTokenConfigured() ? 'Set token address' :
@@ -104,12 +102,12 @@ const AccountPage: React.FC = () => {
                     {/* Only show connect wallet section if not connected */}
                     {!connected && (
                       <div style={{ marginBottom: 28 }}>
-                        <WalletConnection showDescription={true} />
+                        <WalletConnection showDescription={true} showButton={false} />
                       </div>
                     )}
                     
                     {/* If connected, show form */}
-                    {connected && publicKey && (
+                    {!isInitializing && isConnected && publicKey && (
                       <UserInfoForm
                         initialData={shippingInfo}
                         onSubmit={handleFormSubmit}
