@@ -4,9 +4,11 @@ import { checkDropEligibility } from '../utils/dropUtils';
 import { saveShippingInfoForWallet, getShippingInfoForWallet, updateUserBalance, isUsernameAvailable } from '../utils/firestoreUser';
 import { isTokenConfigured } from '../config/token';
 import type { UserInfo } from '../types/global';
+import { useWalletWithLoading } from './useWallet';
 
 export const useAccount = () => {
   const { publicKey, connected } = useWallet();
+  const { isInitializing, isConnected, isDisconnected } = useWalletWithLoading();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shippingInfo, setShippingInfo] = useState<Partial<UserInfo>>({});
@@ -136,6 +138,9 @@ export const useAccount = () => {
     checkEligibility,
     isValidWalletAddress,
     connected,
-    publicKey
+    publicKey,
+    isInitializing,
+    isConnected,
+    isDisconnected
   };
 }; 

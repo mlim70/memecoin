@@ -1,2 +1,3 @@
 export { useAccount } from './useAccount';
-export { useProfileData } from './useProfileData'; 
+export { useProfileData } from './useProfileData';
+export { useWalletWithLoading } from './useWallet'; 

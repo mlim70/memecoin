@@ -212,6 +212,7 @@ body {
   margin: 0 0 1rem;
   background: none;
   -webkit-background-clip: unset;
+  background-clip: unset;
   -webkit-text-fill-color: unset;
 }
 
@@ -437,6 +438,15 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
