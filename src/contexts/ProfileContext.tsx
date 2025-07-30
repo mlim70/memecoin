@@ -58,22 +58,15 @@ export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) =>
           info.shipping.country;
         setIsProfileComplete(!!hasCompleteProfile);
         
-        // If profile is not complete, show mandatory form
-        if (!hasCompleteProfile) {
-          setShowMandatoryForm(true);
-        } else {
-          // Profile is complete, hide the form
-          setShowMandatoryForm(false);
-        }
+        setShowMandatoryForm(false);
       } else {
-        // No existing info found - this is a first-time user
         setIsProfileComplete(false);
-        setShowMandatoryForm(true);
+        setShowMandatoryForm(false);
       }
     } catch (err) {
       console.error('Error checking profile completion:', err);
       setIsProfileComplete(false);
-      setShowMandatoryForm(true);
+      setShowMandatoryForm(false);
     }
   };
 
